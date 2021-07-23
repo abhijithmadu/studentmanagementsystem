@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,6 +27,13 @@ SECRET_KEY = 'django-insecure-*+*gvb0&07&lc9vv=4=9vx0$f!m6h5_r@4@#b+83)-55ag9s%x
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+MEDIA_URL="/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR,"media")
+
+STATIC_URL="/static/"
+STATIC_ROOT = os.path.join(BASE_DIR,"static")
+
 
 
 # Application definition
@@ -129,6 +137,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+AUTH_USER_MODEL = "student_management_app.CustomUser"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

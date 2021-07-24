@@ -26,7 +26,7 @@ def doLogin(request):
             if user.user_type == "1":
                 return HttpResponseRedirect("/admin_home")
             elif user.user_type == "2":
-                return HttpResponse("Staff Login")
+                return HttpResponseRedirect("/staff_home")
             else:
                 return HttpResponse("student Login")
         else:

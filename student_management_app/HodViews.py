@@ -2,7 +2,7 @@ from django.conf.urls.static import static
 from django.contrib import messages
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from .models import Courses, CustomUser, Staffs, Students, Subjects
+from .models import Courses, CustomUser, SessionYearModel, Staffs, Students, Subjects
 
 def admin_home(request):
     return render(request,"hod_template/home_content.html")
@@ -50,7 +50,12 @@ def add_course_save(request):
 
 def add_students(request):
     courses=Courses.objects.all()
-    return render(request,"hod_template/add_student_template.html",{"courses":courses})
+    sessions = SessionYearModel.objects.all()
+    context= {
+        "courses":courses,
+        "sessions":sessions,
+    }
+    return render(request,"hod_template/add_student_template.html",context)
 def add_students_save(request):
     if request.method != 'POST': 
         return HttpResponse("Method Not Allowed")
@@ -61,8 +66,7 @@ def add_students_save(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
         address = request.POST.get("address")
-        session_start=request.POST.get("session_start")
-        session_end=request.POST.get("session_end")
+        session_year_id=request.POST.get("session_year_id")
         course_id = request.POST.get("course")
         sex = request.POST.get("sex")
         try:
@@ -71,8 +75,8 @@ def add_students_save(request):
             course_obj = Courses.objects.get(id=course_id)
             user.students.course_id = course_obj
             user.students.gender= sex
-            user.students.session_start_year=session_start
-            user.students.session_end_year=session_end
+            session_year=SessionYearModel.objects.get(id=session_year_id)
+            user.students.session_year_id=session_year
             user.students.profile_pic = ""
             user.save()
             messages.success(request,"Successfully Added Student")
@@ -217,9 +221,11 @@ def edit_subject_save(request):
 def edit_student(request,student_id):
     student=Students.objects.get(admin=student_id)
     courses = Courses.objects.all()
+    sessions = SessionYearModel.objects.all()
     context= {
         "student":student,
         "courses":courses,
+        "sessions":sessions,
     }
     return render(request,"hod_template/edit_student_template.html",context)
 
@@ -234,8 +240,7 @@ def edit_student_save(request):
         email = request.POST.get("email")
         
         address = request.POST.get("address")
-        session_start=request.POST.get("session_start")
-        session_end=request.POST.get("session_end")
+        session_year_id=request.POST.get("session_year_id")
         course_id = request.POST.get("course")
         sex = request.POST.get("sex")
         try:
@@ -248,8 +253,8 @@ def edit_student_save(request):
 
             student_model= Students.objects.get(admin=student_id)
             student_model.address=address
-            student_model.session_start_year=session_start
-            student_model.session_end_year=session_end
+            sessions= SessionYearModel.objects.get(id=session_year_id)
+            student_model.session_year_id=sessions
             student_model.gender=sex
             course = Courses.objects.get(id=course_id)
             student_model.course_id= course
@@ -259,6 +264,28 @@ def edit_student_save(request):
         except:
             messages.error(request,"Failed To Edited Student")
             return HttpResponseRedirect("/edit_student/" +student_id)
+
+def manage_session(request):
+    return render(request,"hod_template/manage_session_template.html")
+
+def add_session_save(request):
+    if request.method!='POST':
+        return HttpResponse("Method Not Allowed")
+    else:
+        session_start_year = request.POST.get("session_start")
+        session_end_year = request.POST.get("session_end")
+        try:
+            session_year = SessionYearModel(session_start_year=session_start_year,session_end_year=session_end_year)
+            session_year.save()
+            messages.success(request,"Successfully Added Session Year")
+            return HttpResponseRedirect("/manage_session")
+        except:
+            messages.error(request,"Failed To Added Session Year")
+            return HttpResponseRedirect("/manage_session")
+
+
+
+
 
     
 

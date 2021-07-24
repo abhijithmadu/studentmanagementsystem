@@ -61,16 +61,18 @@ Add Student
                         <option>Female</option>    
                     </select>
                   </div>
+
                   <div class="form-group">
-                    <label>Session Start Year</label>
-                    <input type="date" class="form-control" placeholder="Session Start Year" name="session_start">
-                    
-                  </div>
-                  <div class="form-group">
-                    <label>Session End Year</label>
-                    <input type="date" class="form-control" placeholder="Session End Year" name="session_end">
-                    
-                  </div>
+                    <label>Session_Year</label>
+                    <select  class="form-control" name="session_year_id">
+                        
+                        {% for session in sessions %}
+                        <option value="{{session.id}} ">{{session.session_start_year}}</option>
+                            
+                        {% endfor %}
+                            
+                    </select>
+                </div>
                       <div class="form-group">
                       {% if messages %}
                         {% for message in messages %}

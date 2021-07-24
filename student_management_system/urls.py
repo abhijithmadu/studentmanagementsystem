@@ -31,6 +31,15 @@ urlpatterns = [
     path('admin_home', HodViews.admin_home),
     path('add_staff', HodViews.add_staff),
     path('add_staff_save', HodViews.add_staff_save),
-    
+    path('add_course', HodViews.add_course),
+    path('add_course_save', HodViews.add_course_save),
+    path('add_students', HodViews.add_students),
+    path('add_students_save', HodViews.add_students_save),
+    path('add_subject', HodViews.add_subject),
+    path('add_subject_save', HodViews.add_subject_save),
+    path('manage_staff', HodViews.manage_staff),
+    path('manage_students',HodViews.manage_students),
+    path('manage_courses',HodViews.manage_courses),
+    path('manage_subjects',HodViews.manage_subjects),
 
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)+static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)

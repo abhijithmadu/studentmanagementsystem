@@ -16,7 +16,7 @@ Edit Student  | Username : {{ student.admin.username }} |  #ID : {{ student.admi
               </div>
               <!-- /.card-header -->
               <!-- form start -->
-              <form role="form" action="/edit_students_save" method="post">
+              <form role="form" action="/edit_student_save" method="post">
                 {% csrf_token %}
               <div class="card-body">
                 <div class="form-group">
@@ -34,6 +34,7 @@ Edit Student  | Username : {{ student.admin.username }} |  #ID : {{ student.admi
                  <div class="form-group">
                   <label>Username</label>
                   <input type="text" class="form-control" placeholder="Username" name="username" value="{{student.admin.username}}">
+                  <input type="hidden" name="student_id" value="{{student.admin.id}}">
                 </div>
                 <div class="form-group">
                   <label>Address</label>

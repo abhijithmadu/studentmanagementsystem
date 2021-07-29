@@ -54,10 +54,25 @@ urlpatterns = [
     path('add_session_save',HodViews.add_session_save),
 
     # staff url
-    path('staff_home',StaffViews.staff_home),
-
+    path('staff_home',StaffViews.staff_home,name="staff_home"),
+    path('staff_take_attendance', StaffViews.staff_take_attendance, name="staff_take_attendance"),
+    path('get_students', StaffViews.get_students, name="get_students"),
+    path('get_attendance_dates', StaffViews.get_attendance_dates, name="get_attendance_dates"),
+    path('get_attendance_student', StaffViews.get_attendance_student, name="get_attendance_student"),
+    path('save_attendance_data', StaffViews.save_attendance_data, name="save_attendance_data"),
+    path('staff_update_attendance', StaffViews.staff_update_attendance, name="staff_update_attendance"),
+    path('save_updateattendance_data', StaffViews.save_updateattendance_data, name="save_updateattendance_data"),
+    path('staff_apply_leave', StaffViews.staff_apply_leave, name="staff_apply_leave"),
+    path('staff_apply_leave_save', StaffViews.staff_apply_leave_save, name="staff_apply_leave_save"),
+    path('staff_feedback', StaffViews.staff_feedback, name="staff_feedback"),
+    path('staff_feedback_save', StaffViews.staff_feedback_save, name="staff_feedback_save"),
     #student url
-    path('student_home',StudentViews.student_home),
+    path('student_home',StudentViews.student_home,name="student_home"),
+    path('student_apply_leave',StudentViews.student_apply_leave,name="student_apply_leave"),
+    path('student_apply_leave_save',StudentViews.student_apply_leave_save,name="student_apply_leave_save"),
+    path('student_feedback',StudentViews.student_feedback,name="student_feedback"),
+    path('student_feedback_save',StudentViews.student_feedback_save,name="student_feedback_save"),
+    
     
 
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)+static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)

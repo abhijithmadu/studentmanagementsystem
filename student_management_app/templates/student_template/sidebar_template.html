@@ -1,4 +1,3 @@
-
 {% load static %}
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
   <!-- Brand Logo -->
@@ -27,34 +26,18 @@
              with font-awesome or any other icon font library -->
         <li class="nav-item">
           
-          <a href="{% url 'staff_home' %}" class="nav-link {% if request.path == staff_home %} active {% endif %}">
+          <a href="/student_home" class="nav-link {% if request.path == staff_home %} active {% endif %}">
             <i class="nav-icon fas fa-th"></i>
             <p>
               Home
             </p>
           </a>
         </li>
+       
+      
         <li class="nav-item">
           
-          <a href="{% url 'staff_take_attendance'  %}" class="nav-link {% if request.path == staff_take_attendance %} active {% endif %}">
-            <i class="nav-icon fas fa-th"></i>
-            <p>
-              Take Attendance
-            </p>
-          </a>
-        </li>
-        <li class="nav-item">
-          
-          <a href="{% url 'staff_update_attendance'  %}" class="nav-link {% if request.path == staff_take_attendance %} active {% endif %}">
-            <i class="nav-icon fas fa-th"></i>
-            <p>
-              View and Updat Attendance
-            </p>
-          </a>
-        </li>
-        <li class="nav-item">
-          
-          <a href="{% url 'staff_apply_leave'  %}" class="nav-link {% if request.path == staff_take_attendance %} active {% endif %}">
+          <a href="/student_apply_leave" class="nav-link {% if request.path == staff_take_attendance %} active {% endif %}">
             <i class="nav-icon fas fa-th"></i>
             <p>
               Leave Report And Apply Leave
@@ -63,7 +46,7 @@
         </li>
         <li class="nav-item">
           
-          <a href="{% url 'staff_feedback'  %}" class="nav-link {% if request.path == staff_take_attendance %} active {% endif %}">
+          <a href="/student_feedback" class="nav-link {% if request.path == staff_take_attendance %} active {% endif %}">
             <i class="nav-icon fas fa-th"></i>
             <p>
               FeedBack
@@ -71,12 +54,6 @@
           </a>
         </li>
         
-       
-       
-       
-
-
-
       </ul>
     </nav>
     <!-- /.sidebar-menu -->

@@ -2,7 +2,8 @@ from django.conf.urls.static import static
 from django.contrib import messages
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from .models import Courses, CustomUser, FeedBackStudent, SessionYearModel, Staffs, Students, Subjects
+from django.views.decorators.csrf import csrf_exempt
+from .models import Courses, CustomUser, FeedBackStaffs, FeedBackStudent, SessionYearModel, Staffs, Students, Subjects
 
 def admin_home(request):
     return render(request,"hod_template/home_content.html")
@@ -290,9 +291,37 @@ def student_feedback_message(request):
     }
     return render(request,"hod_template/student_feedback_template.html",context)
 
+@csrf_exempt
 def student_feedback_message_replay(request):
-    pass
+    feedback_id = request.POST.get("id")
+    feedback_message = request.POST.get("message")
+    try:
+        feedback = FeedBackStudent.objects.get(id=feedback_id)
+        feedback.feedback_reply=feedback_message
+        feedback.save()
+        return HttpResponse("True")
+    except:
+        return HttpResponse("False")
 
+
+def staff_feedback_message(request):
+    feedback = FeedBackStaffs.objects.all()
+    context = {
+        "feedback":feedback,
+    }
+    return render(request,"hod_template/staff_feedback_template.html",context)
+
+@csrf_exempt
+def staff_feedback_message_replay(request):
+    feedback_id = request.POST.get("id")
+    feedback_message = request.POST.get("message")
+    try:
+        feedback = FeedBackStaffs.objects.get(id=feedback_id)
+        feedback.feedback_reply = feedback_message
+        feedback.save()
+        return HttpResponse("True")
+    except:
+        return HttpResponse("False")
 
 
 

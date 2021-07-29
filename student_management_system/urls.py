@@ -27,7 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.loginPage),
     path('get_user_details',views.GetUserDetails,name="get_user_details"),
-    path('logout_user',views.logout_user,name="logout_user"),
+    path('logout_user',views.logout_user,name="logout"),
     path('doLogin', views.doLogin,name="doLogin"),
     path('admin_home', HodViews.admin_home),
     path('add_staff', HodViews.add_staff),
@@ -54,6 +54,10 @@ urlpatterns = [
     path('add_session_save',HodViews.add_session_save),
     path('student_feedback_message',HodViews.student_feedback_message,name="student_feedback_message"),
     path('student_feedback_message_replay',HodViews.student_feedback_message_replay,name="student_feedback_message_replay"),
+    path('staff_feedback_message',HodViews.staff_feedback_message,name="staff_feedback_message"),
+    path('staff_feedback_message_replay',HodViews.staff_feedback_message_replay,name="staff_feedback_message_replay"),
+    
+
 
     # staff url
     path('staff_home',StaffViews.staff_home,name="staff_home"),

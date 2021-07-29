@@ -1,7 +1,7 @@
 
 {% extends 'hod_template/base_template.html' %}
 {% block page_title %}
-Student Feedback
+Staff Feedback
 {% endblock page_title %}
 {% block main_content %}
     <!-- Main content -->
@@ -12,7 +12,7 @@ Student Feedback
             <!-- general form elements -->
             <div class="card card-primary">
               <div class="card-header">
-                <h3 class="card-title">Student Feedback</h3>
+                <h3 class="card-title">Staff Feedback</h3>
               </div>
               <!-- /.card-header -->
               <!-- form start -->
@@ -20,9 +20,8 @@ Student Feedback
                   <table class="table">
                       <tr>
                           <th>ID</th>
-                          <th>Student Id</th>
-                          <th>Student Name</th>
-                          <th>Student Session</th>
+                          <th>Staff Id</th>
+                          <th>Staff Name</th>
                           <th>Message</th>
                           <th>Send On</th>
                           <th>Replay</th>
@@ -32,9 +31,8 @@ Student Feedback
                       {% for feedback in feedback %}
                       <tr>
                           <td>{{feedback.id}}</td>
-                          <td>{{feedback.student_id.admin.id}}</td>
-                          <td>{{feedback.student_id.admin.first_name}}  {{feedback.student_id.admin.last_name}}</td>
-                          <td>{{feedback.student_id.session_year_id.session_start_year}}-{{feedback.student_id.session_year_id.session_end_year}}</td>
+                          <td>{{feedback.staff_id.admin.id}}</td>
+                          <td>{{feedback.staff_id.admin.first_name}}  {{feedback.staff_id.admin.last_name}}</td>
                           <td>{{feedback.feedback}}</td>
                           <td>{{feedback.created_at}}</td>
                         
@@ -43,9 +41,7 @@ Student Feedback
                             <button class="btn btn-success replay_open_modal" data-toggle="modal" data-target="#replay_modal">Replay</button>
                              {% else %} 
                              {{ feedback.feedback_reply }}  
-                            {% endif %}
-                                
-                                  
+                            {% endif %}   
                           </td>
                       </tr>
                           
@@ -69,13 +65,13 @@ Student Feedback
           <!-- Modal content-->
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Replay</h4>
+              <h4 class="modal-title">Replay</h4> 
               <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-              <p>Please Enter the Replay To <span id="replay_name"></span></p>
+              <p>Please Enter Replay To: <span id="replay_name"></span></p>
               <input type="hidden" id="replay_id" name="replay_id">
-              <textarea class="form-control" rows="5" id="replay_message"></textarea>
+              <textarea class="form-control" id="replay_message" rows="5"></textarea>
               <button id="replay-btn" class="btn btn-info btn-block">Replay</button>
             </div>
             <div class="modal-footer">
@@ -84,18 +80,18 @@ Student Feedback
           </div>
         </div>
       </div>
-
 {% endblock main_content %}
+
 {% block custom_js %}
 <script>
-  $(document).ready(function(){
+    $(document).ready(function(){
       $(".replay_open_modal").click(function(){
           var id = $(this).parents("tr").children("td:eq(0)").text();
           var name = $(this).parents("tr").children("td:eq(2)").text();
           $("#replay_id").val(id);
           $("#replay_name").text(name);
       });
-$(document).on("click","#replay-btn",function(){
+      $(document).on("click","#replay-btn",function(){
 
 $(this).attr("disabled","disabled")
 $(this).text("Sending Replay...")
@@ -104,7 +100,7 @@ var id=$("#replay_id").val();
 var message =$("#replay_message").val();
 
 $.ajax({
-        url:"{% url 'student_feedback_message_replay' %}",
+        url:"{% url 'staff_feedback_message_replay' %}",
         type:'POST',
         data:{id:id,message:message},
     })
@@ -122,7 +118,9 @@ $.ajax({
         alert("Error in send replay....")
     })
 })
-  });
+    });
+
 </script>
+
 {% endblock custom_js %}
 

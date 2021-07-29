@@ -2,7 +2,7 @@ from django.conf.urls.static import static
 from django.contrib import messages
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from .models import Courses, CustomUser, SessionYearModel, Staffs, Students, Subjects
+from .models import Courses, CustomUser, FeedBackStudent, SessionYearModel, Staffs, Students, Subjects
 
 def admin_home(request):
     return render(request,"hod_template/home_content.html")
@@ -282,6 +282,16 @@ def add_session_save(request):
         except:
             messages.error(request,"Failed To Added Session Year")
             return HttpResponseRedirect("/manage_session")
+
+def student_feedback_message(request):
+    feedback = FeedBackStudent.objects.all()
+    context = {
+        "feedback":feedback,
+    }
+    return render(request,"hod_template/student_feedback_template.html",context)
+
+def student_feedback_message_replay(request):
+    pass
 
 
 

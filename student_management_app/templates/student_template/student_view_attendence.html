@@ -1,38 +1,48 @@
 
-{% extends 'hod_template/base_template.html' %}
+{% extends 'student_template/base_template.html' %}
 {% block page_title %}
-Edit Subject | Subject ID : {{ subject.id }}
+View Attendance Report
 {% endblock page_title %}
 {% block main_content %}
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
-          <div class="row">
+                    <div class="row">
               <div class="col-md-12">
             <!-- general form elements -->
             <div class="card card-primary">
               <div class="card-header">
-                <h3 class="card-title">Edit Subject</h3>
+                <h3 class="card-title">View Attendance Report</h3>
               </div>
               <!-- /.card-header -->
               <!-- form start -->
-              <form role="form" action="/edit_subject_save" method="post">
+              <form action="{% url 'student_view_attendence_save' %}" method="post">
                   {% csrf_token %}
                 <div class="card-body">
-                  <div class="form-group">
-                    <label>Subject Name </label>
-                    <input type="text" class="form-control" name="subject_name" placeholder="Enter Subject" value="{{ subject.subject_name }}">
-                    <input type="hidden" class="form-control" name="subject_id" placeholder="Enter Subject" value="{{ subject.id }}">
-                  </div>
-                   
-                  <div class="form-group">
-                    <label>Staff</label>
-                    <select class="form-control" name="staff">
-                        {% for staff in staffs %}
-                          <option value="{{ staff.admin.id }}" {% if staff.id == subject.staff_id.id %} selected {% endif %}>{{ staff.admin.first_name }} {{ staff.admin.last_name }}</option>
+                   <div class="form-group">
+                    <label>Subject </label>
+                    <select class="form-control" name="subject" id="subject">
+                        {% for subject in subject %}
+                          <option value="{{ subject.id }}">{{ subject.subject_name }}</option>
                         {% endfor %}
                     </select>
                   </div>
+                 <div class="row">
+                     <div class="col-lg-6">
+                  <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" name="start_date" class="form-control" placeholder="Start Date">
+                    
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label>End Date</label>
+                    <input type="date" name="end_date" class="form-control" placeholder="End Date">
+                   
+                  </div>
+                </div>
+                </div>
                    <div class="form-group">
                       {% if messages %}
                         {% for message in messages %}
@@ -47,13 +57,17 @@ Edit Subject | Subject ID : {{ subject.id }}
                     </div>
 
                 </div>
+        
                 <!-- /.card-body -->
 
                 <div class="card-footer">
-                  <button type="submit" class="btn btn-primary btn-block">Save Subject</button>
+                  <button type="submit" class="btn btn-primary btn-block" id="fetch_student">View Attendence</button>
                 </div>
-              </form>
+                <div id="student_data" class="card-footer">
+
+                </div>
             </div>
+        </form>
             <!-- /.card -->
 
 
@@ -64,4 +78,3 @@ Edit Subject | Subject ID : {{ subject.id }}
     </section>
     <!-- /.content -->
 {% endblock main_content %}
-

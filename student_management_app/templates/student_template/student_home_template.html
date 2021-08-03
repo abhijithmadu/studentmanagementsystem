@@ -7,7 +7,7 @@ Home
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
-            {% if class_room.count > 0 %}
+            <!-- {% if class_room.count > 0 %}
                     <div class="row">
                         <div class="col-lg-12 form-group" >
                             {% for class_single in class_room %}
@@ -15,14 +15,14 @@ Home
                             {% endfor %}
                         </div>
                     </div>
-              {% endif %}
+              {% endif %} -->
           <div class="row">
 
           <div class="col-lg-3 col-6">
             <!-- small box -->
             <div class="small-box bg-info">
               <div class="inner">
-                <h3>{{ total_attendance }}</h3>
+                <h3>{{ attendence_total }}</h3>
 
                 <p>Total Attendance</p>
               </div>
@@ -37,7 +37,7 @@ Home
             <!-- small box -->
             <div class="small-box bg-success">
               <div class="inner">
-                <h3>{{ attendance_absent }}</h3>
+                <h3>{{ attendence_absent }}</h3>
 
                 <p>Absent</p>
               </div>
@@ -52,7 +52,7 @@ Home
             <!-- small box -->
             <div class="small-box bg-warning">
               <div class="inner">
-                <h3>{{ attendance_present }}</h3>
+                <h3>{{ attendence_present }}</h3>
 
                 <p>Present</p>
               </div>

@@ -3,7 +3,7 @@ from django.contrib.auth import login, logout
 from student_management_app.EmailBackEnd import EmailBackEnd
 from django.http import response
 from django.http.response import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate
 from django.contrib import messages
 
@@ -11,6 +11,24 @@ from django.contrib import messages
 
 def showDemoPage(request):
     return render(request,"demo.html")
+
+def superadminlogin(request):
+    return render(request,"superadmintemplate/superadminlogintemplate.html")
+
+def superlogin(request):
+    if request.method !='POST':
+        HttpResponse("Method Not allowed")
+    else:
+        username = "super@gmail.com"
+        password = "super" 
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        if username == email and password == password:
+            return HttpResponseRedirect("/superadmin_home")
+        else:
+            messages.error(request,"Invalid Login Details")
+            return HttpResponseRedirect("/superadminlogin")
+
 
 def loginPage(request):
     return render(request,"login_page.html")

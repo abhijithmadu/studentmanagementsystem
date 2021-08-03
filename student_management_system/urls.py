@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from student_management_app import StaffViews,StudentViews
+from student_management_app import StaffViews,StudentViews,superadminview
 from student_management_app import HodViews
 from student_management_app import views
 from django.contrib import admin
@@ -22,7 +22,20 @@ from django.urls import path
 from student_management_system import settings
 
 urlpatterns = [
-    
+    path('superadminlogin',views.superadminlogin,name="superadminlogin"),
+    path('superadmin_home',superadminview.superadmin_home,name="superadmin_home"),
+    path('superlogin',views.superlogin,name="superlogin"),
+    path('add_course', superadminview.add_course,name="add_course"),
+    path('add_course_save', superadminview.add_course_save,name="add_course_save"),
+    path('manage_courses',superadminview.manage_courses,name="manage_courses"),
+    path('edit_course/<str:course_id>',superadminview.edit_course,name="edit_course"),
+    path('edit_course_save',superadminview.edit_course_save,name="edit_course_save"),
+    path('add_admin',superadminview.add_admin,name="add_admin"),
+    path('add_admin_save',superadminview.add_admin_save,name="add_admin_save"),
+    path('manage_admin',superadminview.manage_admin,name="manage_admin"),
+    path('edit_admin/<str:admin_id>',superadminview.edit_admin,name="edit_admin"),
+    path('edit_admin_save',superadminview.edit_admin_save,name="edit_admin_save"),
+
     path('demo',views.showDemoPage),
     path('admin/', admin.site.urls),
     path('', views.loginPage),
@@ -32,20 +45,20 @@ urlpatterns = [
     path('admin_home', HodViews.admin_home),
     path('add_staff', HodViews.add_staff),
     path('add_staff_save', HodViews.add_staff_save),
-    path('add_course', HodViews.add_course),
-    path('add_course_save', HodViews.add_course_save),
+    # path('add_course', HodViews.add_course),
+    # path('add_course_save', HodViews.add_course_save),
     path('add_students', HodViews.add_students),
     path('add_students_save', HodViews.add_students_save),
     path('add_subject', HodViews.add_subject),
     path('add_subject_save', HodViews.add_subject_save),
     path('manage_staff', HodViews.manage_staff),
     path('manage_students',HodViews.manage_students),
-    path('manage_courses',HodViews.manage_courses),
+    # path('manage_courses',HodViews.manage_courses),
     path('manage_subjects',HodViews.manage_subjects),
     path('edit_staff/<str:staff_id>',HodViews.edit_staff),
     path('edit_staff_save',HodViews.edit_staff_save),
-    path('edit_course/<str:course_id>',HodViews.edit_course),
-    path('edit_course_save',HodViews.edit_course_save),
+    # path('edit_course/<str:course_id>',HodViews.edit_course),
+    # path('edit_course_save',HodViews.edit_course_save),
     path('edit_subject/<str:subject_id>',HodViews.edit_subject),
     path('edit_subject_save',HodViews.edit_subject_save),
     path('edit_student/<str:student_id>',HodViews.edit_student),
@@ -56,7 +69,12 @@ urlpatterns = [
     path('student_feedback_message_replay',HodViews.student_feedback_message_replay,name="student_feedback_message_replay"),
     path('staff_feedback_message',HodViews.staff_feedback_message,name="staff_feedback_message"),
     path('staff_feedback_message_replay',HodViews.staff_feedback_message_replay,name="staff_feedback_message_replay"),
-    
+    path('student_leave_view',HodViews.student_leave_view,name="student_leave_view"),
+    path('staff_leave_view',HodViews.staff_leave_view,name="staff_leave_view"),
+    path('student_leave_approve/<str:leave_id>',HodViews.student_leave_approve,name="student_leave_approve"),
+    path('student_leave_disapprove/<str:leave_id>',HodViews.student_leave_disapprove,name="student_leave_disapprove"),
+    path('staff_leave_approve/<str:leave_id>',HodViews.staff_leave_approve,name="staff_leave_approve"),
+    path('staff_leave_disapprove/<str:leave_id>',HodViews.staff_leave_disapprove,name="staff_leave_disapprove"),
 
 
     # staff url
@@ -72,8 +90,11 @@ urlpatterns = [
     path('staff_apply_leave_save', StaffViews.staff_apply_leave_save, name="staff_apply_leave_save"),
     path('staff_feedback', StaffViews.staff_feedback, name="staff_feedback"),
     path('staff_feedback_save', StaffViews.staff_feedback_save, name="staff_feedback_save"),
+
     #student url
     path('student_home',StudentViews.student_home,name="student_home"),
+    path('student_view_attendence',StudentViews.student_view_attendence,name="student_view_attendence"),
+    path('student_view_attendence_save',StudentViews.student_view_attendence_save,name="student_view_attendence_save"),
     path('student_apply_leave',StudentViews.student_apply_leave,name="student_apply_leave"),
     path('student_apply_leave_save',StudentViews.student_apply_leave_save,name="student_apply_leave_save"),
     path('student_feedback',StudentViews.student_feedback,name="student_feedback"),

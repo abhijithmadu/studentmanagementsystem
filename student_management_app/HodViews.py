@@ -1,15 +1,21 @@
 from django.conf.urls.static import static
-from django.contrib import messages
+from django.contrib import admin, messages
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from .models import Courses, CustomUser, FeedBackStaffs, FeedBackStudent, SessionYearModel, Staffs, Students, Subjects
+from .models import AdminHOD, Courses, CustomUser, FeedBackStaffs, FeedBackStudent, LeaveReportStaff, LeaveReportStudent, SessionYearModel, Staffs, Students, Subjects
 
 def admin_home(request):
     return render(request,"hod_template/home_content.html")
 
 def add_staff(request):
-    return render(request,"hod_template/add_staff_template.html")
+    admin_id = AdminHOD.objects.get(admin=request.user.id)
+    print(admin_id)
+    courses=Courses.objects.get(id=admin_id.course_id.id)
+    context ={
+        "courses":courses,
+    }
+    return render(request,"hod_template/add_staff_template.html",context)
 
 def add_staff_save(request):
     if request.method != 'POST': 
@@ -22,8 +28,13 @@ def add_staff_save(request):
         password = request.POST.get("password")
         address = request.POST.get("address")
         try:
+            admin_id = AdminHOD.objects.get(admin=request.user.id)
+            print(admin_id)
+            courses=Courses.objects.get(id=admin_id.course_id.id)
+            print(courses)
             user = CustomUser.objects.create_user(username = username,first_name=first_name,last_name=last_name,email=email,password=password,user_type=2)
             user.staffs.address= address
+            user.staffs.course_id = courses
             user.save()
             messages.success(request,"Successfully Added Staff")
             return HttpResponseRedirect("/add_staff")
@@ -87,10 +98,12 @@ def add_students_save(request):
             return HttpResponseRedirect("/add_students") 
 
 def add_subject(request):
-    courses = Courses.objects.all()
-    staffs=CustomUser.objects.filter(user_type=2)
+    admin = AdminHOD.objects.get(admin=request.user.id)
+    courses=Courses.objects.get(id=admin.course_id.id)
+    staffs=Staffs.objects.filter(course_id=courses)
+    print(staffs)
     context={
-        "courses":courses,
+
         "staffs":staffs,
     }
     return render(request,"hod_template/add_subject_template.html",context)
@@ -100,8 +113,8 @@ def add_subject_save(request):
         return HttpResponse("Method Not Allowed")
     else:
         subject_name= request.POST.get("subject_name")
-        course_id=request.POST.get("course")
-        course = Courses.objects.get(id=course_id)
+        admin_id = AdminHOD.objects.get(admin=request.user.id)
+        course = Courses.objects.get(id=admin_id.course_id.id)
         staff_id = request.POST.get("staff")
         staff = CustomUser.objects.get(id=staff_id)
         try:
@@ -114,7 +127,10 @@ def add_subject_save(request):
             return HttpResponseRedirect("/add_subject")
 
 def manage_staff(request):
-    staffs = Staffs.objects.all()
+    admin_id = AdminHOD.objects.get(admin=request.user.id)
+    print(admin_id)
+    courses=Courses.objects.get(id=admin_id.course_id.id)
+    staffs = Staffs.objects.filter(course_id=courses)
     return render(request,"hod_template/manage_staff_template.html",{"staffs":staffs})
 
 def manage_students(request):
@@ -126,7 +142,9 @@ def manage_courses(request):
     return render(request,"hod_template/manage_course_template.html",{"courses":courses})
 
 def manage_subjects(request):
-    subjects = Subjects.objects.all()
+    admin_id = AdminHOD.objects.get(admin=request.user.id)
+    courses=Courses.objects.get(id=admin_id.course_id.id)
+    subjects = Subjects.objects.filter(course_id=courses)
     return render(request,"hod_template/manage_subject_template.html",{"subjects":subjects})
 
 def edit_staff(request,staff_id):
@@ -187,11 +205,11 @@ def edit_course_save(request):
 
 def edit_subject(request,subject_id):
     subject = Subjects.objects.get(id=subject_id)
-    courses = Courses.objects.all()
-    staffs = CustomUser.objects.filter(user_type=2)
+    admin = AdminHOD.objects.get(admin=request.user.id)
+    courses=Courses.objects.get(id=admin.course_id.id)
+    staffs=Staffs.objects.filter(course_id=courses)
     context= {
         "subject":subject,
-        "courses":courses,
         "staffs":staffs,
     }
     return render(request,"hod_template/edit_subject_template.html",context)
@@ -204,14 +222,11 @@ def edit_subject_save(request):
         subject_id = request.POST.get("subject_id")
         subject_name = request.POST.get("subject_name")
         staff_id = request.POST.get("staff")
-        course_id = request.POST.get("course")
         try:
             subject=Subjects.objects.get(id=subject_id)
             subject.subject_name=subject_name
             staff=CustomUser.objects.get(id=staff_id)
             subject.staff_id= staff
-            course = Courses.objects.get(id=course_id)
-            subject.course_id=course
             subject.save()
             messages.success(request,"Successfully Edited Subject")
             return HttpResponseRedirect("/edit_subject/" +subject_id)
@@ -322,6 +337,48 @@ def staff_feedback_message_replay(request):
         return HttpResponse("True")
     except:
         return HttpResponse("False")
+
+def student_leave_view(request):
+    leave_report = LeaveReportStudent.objects.all()
+    context= {
+        "leave_report":leave_report
+    }
+    return render(request,"hod_template/student_leave_view.html",context)
+
+def staff_leave_view(request):
+    leave_report = LeaveReportStaff.objects.all()
+    context ={
+        "leave_report":leave_report,
+    }
+    return render(request,"hod_template/staff_leave_view.html",context)
+
+def student_leave_approve(request,leave_id):
+    leave= LeaveReportStudent.objects.get(id=leave_id)
+    leave.leave_status=1
+    leave.save()
+    return HttpResponseRedirect("/student_leave_view")
+
+def student_leave_disapprove(request,leave_id):
+    leave=LeaveReportStudent.objects.get(id=leave_id)
+    leave.leave_status=2
+    leave.save()
+    return HttpResponseRedirect("/student_leave_view")
+
+
+def staff_leave_approve(request,leave_id):
+    leave= LeaveReportStaff.objects.get(id=leave_id)
+    leave.leave_status=1
+    leave.save()
+    return HttpResponseRedirect("/staff_leave_view")
+
+def staff_leave_disapprove(request,leave_id):
+    leave=LeaveReportStaff.objects.get(id=leave_id)
+    leave.leave_status=2
+    leave.save()
+    return HttpResponseRedirect("/staff_leave_view")
+
+
+
 
 
 

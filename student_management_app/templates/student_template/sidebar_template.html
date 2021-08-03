@@ -26,7 +26,7 @@
              with font-awesome or any other icon font library -->
         <li class="nav-item">
           
-          <a href="/student_home" class="nav-link {% if request.path == staff_home %} active {% endif %}">
+          <a href="/student_home" class="nav-link">
             <i class="nav-icon fas fa-th"></i>
             <p>
               Home
@@ -37,7 +37,7 @@
       
         <li class="nav-item">
           
-          <a href="/student_apply_leave" class="nav-link {% if request.path == staff_take_attendance %} active {% endif %}">
+          <a href="/student_apply_leave" class="nav-link">
             <i class="nav-icon fas fa-th"></i>
             <p>
               Leave Report And Apply Leave
@@ -46,10 +46,18 @@
         </li>
         <li class="nav-item">
           
-          <a href="/student_feedback" class="nav-link {% if request.path == staff_take_attendance %} active {% endif %}">
+          <a href="/student_feedback" class="nav-link">
             <i class="nav-icon fas fa-th"></i>
             <p>
               FeedBack
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/student_view_attendence" class="nav-link ">
+            <i class="nav-icon fas fa-th"></i>
+            <p>
+              view Attendece Report
             </p>
           </a>
         </li>

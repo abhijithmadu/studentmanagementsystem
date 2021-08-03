@@ -16,8 +16,9 @@ def add_course_save(request):
         return HttpResponse("Method Not Allowed")
     else:
         course= request.POST.get("course")
+        semester = request.POST.get("semester")
         try:
-            course_model = Courses(course_name=course)
+            course_model = Courses(course_name=course,semesters=semester)
             course_model.save()
             messages.success(request,"Successfully Added Course")
             return HttpResponseRedirect("/add_course")

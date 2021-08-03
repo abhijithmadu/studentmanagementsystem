@@ -320,9 +320,22 @@ def student_feedback_message_replay(request):
 
 
 def staff_feedback_message(request):
-    feedback = FeedBackStaffs.objects.all()
+    admin = AdminHOD.objects.get(admin = request.user.id)
+    course = Courses.objects.get(id = admin.course_id.id)
+    staff = Staffs.objects.filter(course_id = course)
+    # for staff in staff:
+    #     print(staff.id)
+    # print(staff)
+    feedback_list = []
+
+    for staff in staff:
+        if  FeedBackStaffs.objects.filter(staff_id = staff.id).exists():
+            feedback =  FeedBackStaffs.objects.filter(staff_id = staff.id)
+            print(feedback,"feedback hello")
+            for feedbacks in feedback:
+                feedback_list.append(feedbacks)
     context = {
-        "feedback":feedback,
+        "feedback":feedback_list,
     }
     return render(request,"hod_template/staff_feedback_template.html",context)
 

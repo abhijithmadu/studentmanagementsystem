@@ -43,7 +43,7 @@ Add Student
                     <label>Address</label>
                     <input type="text" class="form-control" placeholder="Address" name="address">
                   </div>
-                  <div class="form-group">
+                  <!-- <div class="form-group">
                     <label>Course</label>
                     <select  class="form-control" name="course">
                         
@@ -53,7 +53,7 @@ Add Student
                         {% endfor %}
                             
                     </select>
-                </div>
+                </div> -->
                   <div class="form-group">
                     <label>Sex</label>
                     <select  class="form-control" name="sex">
@@ -63,11 +63,11 @@ Add Student
                   </div>
 
                   <div class="form-group">
-                    <label>Session_Year</label>
-                    <select  class="form-control" name="session_year_id">
+                    <label>Semester</label>
+                    <select  class="form-control" name="semester_id">
                         
-                        {% for session in sessions %}
-                        <option value="{{session.id}} ">{{session.session_start_year}}</option>
+                        {% for semester in semester %}
+                        <option value="{{semester.id}} ">{{semester.semester_name}}</option>
                             
                         {% endfor %}
                             

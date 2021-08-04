@@ -63,6 +63,8 @@ urlpatterns = [
     path('edit_subject_save',HodViews.edit_subject_save),
     path('edit_student/<str:student_id>',HodViews.edit_student),
     path('edit_student_save',HodViews.edit_student_save),
+    path('manage_semester',HodViews.manage_semester,name="manage_semester"),
+    path('add_semester_save',HodViews.add_semester_save,name="add_semester_save"),
     path('manage_session',HodViews.manage_session),
     path('add_session_save',HodViews.add_session_save),
     path('student_feedback_message',HodViews.student_feedback_message,name="student_feedback_message"),

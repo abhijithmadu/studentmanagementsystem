@@ -3,7 +3,7 @@ from django.contrib import admin, messages
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from .models import AdminHOD, Courses, CustomUser, FeedBackStaffs, FeedBackStudent, LeaveReportStaff, LeaveReportStudent, SessionYearModel, Staffs, Students, Subjects
+from .models import AdminHOD, Courses, CustomUser, FeedBackStaffs, FeedBackStudent, LeaveReportStaff, LeaveReportStudent, Semester, SessionYearModel, Staffs, Students, Subjects
 
 def admin_home(request):
     return render(request,"hod_template/home_content.html")
@@ -61,11 +61,12 @@ def add_course_save(request):
             return HttpResponseRedirect("/add_course")
 
 def add_students(request):
-    courses=Courses.objects.all()
-    sessions = SessionYearModel.objects.all()
+    admin = AdminHOD.objects.get(admin=request.user.id)
+    courses=Courses.objects.get(id=admin.course_id.id)
+    # sessions = SessionYearModel.objects.all()
+    semester = Semester.objects.filter(course = courses)
     context= {
-        "courses":courses,
-        "sessions":sessions,
+        "semester":semester,
     }
     return render(request,"hod_template/add_student_template.html",context)
 def add_students_save(request):
@@ -78,17 +79,17 @@ def add_students_save(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
         address = request.POST.get("address")
-        session_year_id=request.POST.get("session_year_id")
-        course_id = request.POST.get("course")
+        semester_id=request.POST.get("semester_id")
         sex = request.POST.get("sex")
         try:
             user = CustomUser.objects.create_user(username = username,first_name=first_name,last_name=last_name,email=email,password=password,user_type=3)
             user.students.address= address
-            course_obj = Courses.objects.get(id=course_id)
-            user.students.course_id = course_obj
+            admin = AdminHOD.objects.get(admin=request.user.id)
+            courses=Courses.objects.get(id=admin.course_id.id)
+            semester = Semester.objects.get(id=semester_id)
             user.students.gender= sex
-            session_year=SessionYearModel.objects.get(id=session_year_id)
-            user.students.session_year_id=session_year
+            user.students.course_id = courses
+            user.students.semester_id = semester
             user.students.profile_pic = ""
             user.save()
             messages.success(request,"Successfully Added Student")
@@ -100,11 +101,13 @@ def add_students_save(request):
 def add_subject(request):
     admin = AdminHOD.objects.get(admin=request.user.id)
     courses=Courses.objects.get(id=admin.course_id.id)
+    semester = Semester.objects.filter(course = courses)
     staffs=Staffs.objects.filter(course_id=courses)
     print(staffs)
     context={
 
         "staffs":staffs,
+        "semester":semester,
     }
     return render(request,"hod_template/add_subject_template.html",context)
 
@@ -115,10 +118,12 @@ def add_subject_save(request):
         subject_name= request.POST.get("subject_name")
         admin_id = AdminHOD.objects.get(admin=request.user.id)
         course = Courses.objects.get(id=admin_id.course_id.id)
+        semester_id = request.POST.get("semester")
+        semester = Semester.objects.get(id = semester_id)
         staff_id = request.POST.get("staff")
         staff = CustomUser.objects.get(id=staff_id)
         try:
-            subject = Subjects(subject_name=subject_name,course_id=course,staff_id=staff)
+            subject = Subjects(subject_name=subject_name,course_id=course,semester_id=semester,staff_id=staff)
             subject.save()
             messages.success(request,"Successfully Added Subject")
             return HttpResponseRedirect("/add_subject")
@@ -134,7 +139,10 @@ def manage_staff(request):
     return render(request,"hod_template/manage_staff_template.html",{"staffs":staffs})
 
 def manage_students(request):
-    students = Students.objects.all()
+    admin_id = AdminHOD.objects.get(admin=request.user.id)
+    print(admin_id)
+    courses=Courses.objects.get(id=admin_id.course_id.id)
+    students = Students.objects.filter(course_id=courses)
     return render(request,"hod_template/manage_student_template.html",{"students":students})
 
 def manage_courses(request):
@@ -236,12 +244,15 @@ def edit_subject_save(request):
 
 def edit_student(request,student_id):
     student=Students.objects.get(admin=student_id)
-    courses = Courses.objects.all()
-    sessions = SessionYearModel.objects.all()
+    admin = AdminHOD.objects.get(admin=request.user.id)
+    courses=Courses.objects.get(id=admin.course_id.id)
+    semester = Semester.objects.filter(course = courses)
+  
+    
     context= {
         "student":student,
         "courses":courses,
-        "sessions":sessions,
+        "semester":semester,
     }
     return render(request,"hod_template/edit_student_template.html",context)
 
@@ -256,8 +267,8 @@ def edit_student_save(request):
         email = request.POST.get("email")
         
         address = request.POST.get("address")
-        session_year_id=request.POST.get("session_year_id")
-        course_id = request.POST.get("course")
+        semester_id=request.POST.get("semester_id")
+        
         sex = request.POST.get("sex")
         try:
             user = CustomUser.objects.get(id=student_id)
@@ -266,20 +277,39 @@ def edit_student_save(request):
             user.username= username
             user.email=email
             user.save()
-
             student_model= Students.objects.get(admin=student_id)
             student_model.address=address
-            sessions= SessionYearModel.objects.get(id=session_year_id)
-            student_model.session_year_id=sessions
+            semester= Semester.objects.get(id=semester_id)
+            student_model.semester_id=semester
             student_model.gender=sex
-            course = Courses.objects.get(id=course_id)
-            student_model.course_id= course
             student_model.save()
             messages.success(request,"Successfully Edited Student")
             return HttpResponseRedirect("/edit_student/" +student_id)
         except:
             messages.error(request,"Failed To Edited Student")
             return HttpResponseRedirect("/edit_student/" +student_id)
+
+def manage_semester(request):
+    return render(request,"hod_template/manage_semester_template.html")
+
+def add_semester_save(request):
+    if request.method!='POST':
+        return HttpResponse("Method Not Allowed")
+    else:
+        semester = request.POST.get("semester")
+        try:
+            admin_id = AdminHOD.objects.get(admin=request.user.id)
+            print(admin_id)
+            courses=Courses.objects.get(id=admin_id.course_id.id)
+            semester_model = Semester(semester_name=semester)
+            semester_model.course = courses
+            semester_model.save()
+            messages.success(request,"Successfully Added Semester")
+            return HttpResponseRedirect("/manage_semester")
+        except:
+            messages.error(request,"Failed To Added Session Semester")
+            return HttpResponseRedirect("/manage_semester")
+
 
 def manage_session(request):
     return render(request,"hod_template/manage_session_template.html")

@@ -215,9 +215,11 @@ def edit_subject(request,subject_id):
     subject = Subjects.objects.get(id=subject_id)
     admin = AdminHOD.objects.get(admin=request.user.id)
     courses=Courses.objects.get(id=admin.course_id.id)
+    semester = Semester.objects.filter(course = courses)
     staffs=Staffs.objects.filter(course_id=courses)
     context= {
         "subject":subject,
+        "semester":semester,
         "staffs":staffs,
     }
     return render(request,"hod_template/edit_subject_template.html",context)
@@ -310,27 +312,10 @@ def add_semester_save(request):
             messages.error(request,"Failed To Added Session Semester")
             return HttpResponseRedirect("/manage_semester")
 
-
-def manage_session(request):
-    return render(request,"hod_template/manage_session_template.html")
-
-def add_session_save(request):
-    if request.method!='POST':
-        return HttpResponse("Method Not Allowed")
-    else:
-        session_start_year = request.POST.get("session_start")
-        session_end_year = request.POST.get("session_end")
-        try:
-            session_year = SessionYearModel(session_start_year=session_start_year,session_end_year=session_end_year)
-            session_year.save()
-            messages.success(request,"Successfully Added Session Year")
-            return HttpResponseRedirect("/manage_session")
-        except:
-            messages.error(request,"Failed To Added Session Year")
-            return HttpResponseRedirect("/manage_session")
-
 def student_feedback_message(request):
-    feedback = FeedBackStudent.objects.all()
+    admin = AdminHOD.objects.get(admin = request.user.id)
+    course = Courses.objects.get(id = admin.course_id.id)
+    feedback = FeedBackStudent.objects.filter(course_id = course)
     context = {
         "feedback":feedback,
     }
@@ -382,14 +367,18 @@ def staff_feedback_message_replay(request):
         return HttpResponse("False")
 
 def student_leave_view(request):
-    leave_report = LeaveReportStudent.objects.all()
+    admin = AdminHOD.objects.get(admin = request.user.id)
+    course = Courses.objects.get(id=admin.course_id.id)
+    leave_report = LeaveReportStudent.objects.filter(course_id=course)
     context= {
         "leave_report":leave_report
     }
     return render(request,"hod_template/student_leave_view.html",context)
 
 def staff_leave_view(request):
-    leave_report = LeaveReportStaff.objects.all()
+    admin = AdminHOD.objects.get(admin = request.user.id)
+    course = Courses.objects.get(id=admin.course_id.id)
+    leave_report = LeaveReportStaff.objects.filter(course_id=course)
     context ={
         "leave_report":leave_report,
     }

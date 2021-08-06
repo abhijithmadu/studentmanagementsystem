@@ -19,11 +19,12 @@ Student Leave
               <div class="table">
                   <table class="table">
                       <tr>
-                          <th>ID</th>
+                          
                           <th>Student Id</th>
                           <th>Student Name</th>
                           <th>Leave Date</th>
                           <th>Leave Message</th>
+                          <th>Semester</th>
                           <th>Apply On</th>
                           <th>Action</th>
                           
@@ -31,11 +32,18 @@ Student Leave
                       
                       {% for leave in leave_report %}
                       <tr>
-                          <td>{{leave.id}}</td>
+                          
                           <td>{{leave.student_id.admin.id}}</td>
-                          <td>{{leave.student_id.admin.first_name}}  {{feedback.student_id.admin.last_name}}</td>
-                          <td>{{leave.leave_date}}</td>
+                          <td>{{leave.student_id.admin.first_name}} {{leave.student_id.admin.last_name}}</td>
+                          <td>
+                            {% if leave.leave_end_date == "" or leave.leave_end_date == "0" %}
+                            {{leave.leave_date}}
+                            {% else %}
+                            {{leave.leave_date}} To {{leave.leave_end_date}}
+                            {% endif %}
+                          </td>
                           <td>{{leave.leave_message}}</td>
+                          <td>{{leave.student_id.semester_id.semester_name}}</td>
                           <td>{{leave.created_at}}</td>
                           <td>
                               

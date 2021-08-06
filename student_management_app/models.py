@@ -101,8 +101,10 @@ class LeaveReportStudent(models.Model):
     id = models.AutoField(primary_key=True)
     student_id = models.ForeignKey(Students, on_delete=models.CASCADE)
     leave_date = models.CharField(max_length=255)
+    leave_end_date = models.CharField(max_length=255,default=0)
     leave_message = models.TextField()
     leave_status = models.IntegerField(default=0)
+    course_id = models.ForeignKey(Courses,on_delete=CASCADE,default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     objects = models.Manager()
@@ -114,6 +116,7 @@ class LeaveReportStaff(models.Model):
     leave_date = models.CharField(max_length=255)
     leave_message = models.TextField()
     leave_status = models.IntegerField(default=0)
+    course_id = models.ForeignKey(Courses,on_delete=CASCADE,default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     objects = models.Manager()
@@ -124,6 +127,7 @@ class FeedBackStudent(models.Model):
     student_id = models.ForeignKey(Students, on_delete=models.CASCADE)
     feedback = models.TextField()
     feedback_reply = models.TextField()
+    course_id = models.ForeignKey(Courses,on_delete=CASCADE,default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     objects = models.Manager()
@@ -157,15 +161,15 @@ class NotificationStaffs(models.Model):
     objects = models.Manager()
 
 class Question(models.Model):
-    course=models.ForeignKey(Courses,on_delete=models.CASCADE)
     marks=models.PositiveIntegerField()
     question=models.CharField(max_length=600)
     option1=models.CharField(max_length=200)
     option2=models.CharField(max_length=200)
     option3=models.CharField(max_length=200)
     option4=models.CharField(max_length=200)
-    cat=(('Option1','Option1'),('Option2','Option2'),('Option3','Option3'),('Option4','Option4'))
-    answer=models.CharField(max_length=200,choices=cat)
+    answer=models.CharField(max_length=200)
+    course_id = models.ForeignKey(Courses, on_delete=models.CASCADE,default=1)
+    subject_id = models.ForeignKey(Subjects,on_delete=models.CASCADE,default=1)
 
 
 class StudentResult(models.Model):

@@ -1,0 +1,149 @@
+{% extends 'staff_template/base_template.html' %}
+{% block page_title %}
+Add Questions
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-12">
+            <!-- general form elements -->
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Add Question</h3>
+              </div>
+              <!-- /.card-header -->
+              <!-- form start -->
+              <form role="form" action="/add_question_save" method="post">
+                  {% csrf_token %}
+                <div class="card-body">
+                  <div class="form-group">
+                    <label>Semester</label>
+                    <select  class="form-control" id="semester" name="semester_id">
+                        
+                        {% for semester in semester %}
+                        <option value="{{semester.id}} ">{{semester.semester_name}}</option>
+                            
+                        {% endfor %}
+                            
+                    </select>
+                </div>
+                <div class="form-group">
+                  <label>Subject </label>
+                  <select class="form-control" name="subject" id="subject" >
+                   
+                      
+                  </select>
+                </div>
+   
+                  <div class="form-group">
+                    <label>Add Question</label>
+                    <input type="text" class="form-control" placeholder="Add Question" name="add_question">
+                  </div>
+                  <div class="form-group">
+                    <label>Option 1</label>
+                    <input type="text" class="form-control" placeholder="Option 1" name="option1">
+                  </div>
+                  <div class="form-group">
+                    <label>Option 2</label>
+                    <input type="text" class="form-control" placeholder="Option 2" name="option2">
+                  </div>
+                  <div class="form-group">
+                    <label>Option 3</label>
+                    <input type="text" class="form-control" placeholder="Option 3" name="option3">
+                  </div>
+                  <div class="form-group">
+                    <label>Option 4</label>
+                    <input type="text" class="form-control" placeholder="Option 4" name="option4">
+                  </div>
+                  <div class="form-group">
+                    <label>Answer</label>
+                    <select class="form-control" name="answer" id="cars">
+                      <option value="option1">Option 1</option>
+                      <option value="option2">Option 2</option>
+                      <option value="option3">Option 3</option>
+                      <option value="option4">Option 4</option>
+                    </select>
+                  </div>
+
+
+                 
+                      <div class="form-group">
+                      {% if messages %}
+                        {% for message in messages %}
+                        {% if message.tags == 'success' %}
+                        <div class="alert alert-success" style="margin-top:10px">{{ message }}</div>
+                        {% endif %}
+                        {% if message.tags == 'error' %}
+                        <div class="alert alert-danger" style="margin-top:10px">{{ message }}</div>
+                        {% endif %}
+                        {% endfor %}
+                      {% endif %}
+                    </div>
+
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-primary btn-block">Add Question</button>
+                </div>
+              </form>
+            </div>
+            <!-- /.card -->
+
+
+
+          </div>
+          </div>
+      </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+
+{% block custom_js %}
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+  $(document).ready(function(){
+    $("#semester").change(function(){
+      console.log("Hello how are you")
+      var semester = $("#semester").val()
+      var sub = $('#subject')
+      sub.innerHTML = ""
+      console.log(sub)
+      console.log(semester);
+      $.ajax({
+        url:"{% url 'fetch_subject' %}",
+        type:'GET',
+        data:{'semester':semester},
+
+        success: function(data){
+          var options = $(".subject-hide")
+        
+          $('#subject').html(" ")
+          for(let i=0; i<options.length; i++){
+            options[i].setAttribute("hidden",true)
+          }
+       
+          data.forEach((item)=>{
+            console.log(item.subject_name);
+            // sub.innerHTML+=`
+            // <option value="">${item.subject_name}</option>
+            // `
+            $('#subject').append(`<option class="subject-hide" value="${item.subject_name}">
+                                       ${item.subject_name}
+                                  </option>`);
+          })
+        }
+      })
+     
+
+      
+      
+
+    })
+  })
+
+</script>
+
+{% endblock custom_js %}

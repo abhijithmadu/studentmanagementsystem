@@ -70,13 +70,16 @@
             </p>
           </a>
         </li>
-        
-       
-       
-       
-
-
-
+        <li class="nav-item">
+          
+          <a href="{% url 'add_question'  %}" class="nav-link {% if request.path == staff_take_attendance %} active {% endif %}">
+            <i class="nav-icon fas fa-th"></i>
+            <p>
+              Add Question
+            </p>
+          </a>
+        </li>
+ 
       </ul>
     </nav>
     <!-- /.sidebar-menu -->

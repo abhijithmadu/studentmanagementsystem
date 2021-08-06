@@ -1,7 +1,7 @@
 
 {% extends 'hod_template/base_template.html' %}
 {% block page_title %}
-Student Leave 
+Staff Leave 
 {% endblock page_title %}
 {% block main_content %}
     <!-- Main content -->
@@ -12,16 +12,16 @@ Student Leave
             <!-- general form elements -->
             <div class="card card-primary">
               <div class="card-header">
-                <h3 class="card-title">Student Leave Report</h3>
+                <h3 class="card-title">Staff Leave Report</h3>
               </div>
               <!-- /.card-header -->
               <!-- form start -->
               <div class="table">
                   <table class="table">
                       <tr>
-                          <th>ID</th>
-                          <th>Student Id</th>
-                          <th>Student Name</th>
+                          <!-- <th>ID</th> -->
+                          <th>Staff Id</th>
+                          <th>Staff Name</th>
                           <th>Leave Date</th>
                           <th>Leave Message</th>
                           <th>Apply On</th>
@@ -31,10 +31,10 @@ Student Leave
                       
                       {% for leave in leave_report %}
                       <tr>
-                          <td>{{leave.id}}</td>
+                          <!-- <td>{{leave.id}}</td> -->
                           <td>{{leave.staff_id.admin.id}}</td>
                           <td>{{leave.staff_id.admin.first_name}} {{leave.staff_id.admin.last_name}}</td>
-                          <td>{{leave.leave_date}}</td>
+                          <td>{{leave.leave_date}}{{leave.leave_end_date}}</td>
                           <td>{{leave.leave_message}}</td>
                           <td>{{leave.created_at}}</td>
                           <td>

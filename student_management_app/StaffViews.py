@@ -1,3 +1,4 @@
+from student_management_app.models import Courses, CustomUser, Question, Semester
 from student_management_app.models import FeedBackStaffs
 from django.contrib import messages
 from student_management_app.models import Staffs
@@ -8,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, request
 import json
 from django.core import serializers
+from django.db import models
 
 
 def staff_home(request):
@@ -134,10 +136,11 @@ def staff_apply_leave_save(request):
         leave_date = request.POST.get("leave_date")
         leave_message = request.POST.get("leave_message")
         print(request.user.id)
-
-        staff= Staffs.objects.get(admin=request.user.id)
+       
         try:
-            leave_report = LeaveReportStaff(staff_id=staff,leave_date=leave_date,leave_message=leave_message,leave_status=0)
+            staff= Staffs.objects.get(admin=request.user.id)
+            course = Courses.objects.get(id=staff.course_id.id)
+            leave_report = LeaveReportStaff(staff_id=staff,leave_date=leave_date,course_id=course,leave_message=leave_message,leave_status=0)
             leave_report.save()
             messages.success(request,"Successfully Applied Leave")
             return HttpResponseRedirect("/staff_apply_leave")
@@ -164,6 +167,54 @@ def staff_feedback_save(request):
         feedback.save()
         messages.success(request,"Successfully send message")
         return HttpResponseRedirect("/staff_feedback")
+
+def add_question(request):
+   
+    # staff = CustomUser.objects.get(id=request.user.id)
+    # print(staff)
+    # admin = Staffs.objects.get(admin = staff)
+    # semester = Semester.objects.filter(course = admin.course_id.id)
+    # subjects = Subjects.objects.filter(staff_id = staff)
+    # print(subjects)
+    # context = {
+    #     "subjects":subjects,
+    #     "semester":semester,
+    # }
+    admin = Staffs.objects.get(admin = request.user.id)
+    print(admin)
+    semester = Semester.objects.filter(course = admin.course_id.id)
+    subject = Subjects.objects.filter(semester_id = semester)
+    print(semester)
+    context = {
+        "semester":semester,
+        # "subject":subject
+    }
+    return render(request,"staff_template/add_question_template.html",context)
+
+def fetch_subject(request):
+    if request.method == 'GET':
+        semester = request.GET['semester']
+        semester = Semester.objects.get(id=semester)
+        subject = Subjects.objects.filter(semester_id = semester)
+        print(subject,"subject")
+        sub = subject.values()
+    return JsonResponse(list(sub),safe=False)
+
+def add_question_save(request):
+    if request.method != 'POST':
+        return HttpResponse("Method Not Allowed")
+    else:
+        semester = request.POST.get("semester_id")
+        subject = request.POST.get("subject")
+        question = request.POST.get("add_question")
+        option1 = request.POST.get("option1")
+        option2 = request.POST.get("option2")
+        option3 = request.POST.get("option3")
+        option4 = request.POST.get("option4")
+        answer = request.POST.get("answer")
+
+        
+
 
 
 

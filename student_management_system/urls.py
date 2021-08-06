@@ -65,8 +65,8 @@ urlpatterns = [
     path('edit_student_save',HodViews.edit_student_save),
     path('manage_semester',HodViews.manage_semester,name="manage_semester"),
     path('add_semester_save',HodViews.add_semester_save,name="add_semester_save"),
-    path('manage_session',HodViews.manage_session),
-    path('add_session_save',HodViews.add_session_save),
+    # path('manage_session',HodViews.manage_session),
+    # path('add_session_save',HodViews.add_session_save),
     path('student_feedback_message',HodViews.student_feedback_message,name="student_feedback_message"),
     path('student_feedback_message_replay',HodViews.student_feedback_message_replay,name="student_feedback_message_replay"),
     path('staff_feedback_message',HodViews.staff_feedback_message,name="staff_feedback_message"),
@@ -92,6 +92,9 @@ urlpatterns = [
     path('staff_apply_leave_save', StaffViews.staff_apply_leave_save, name="staff_apply_leave_save"),
     path('staff_feedback', StaffViews.staff_feedback, name="staff_feedback"),
     path('staff_feedback_save', StaffViews.staff_feedback_save, name="staff_feedback_save"),
+    path('add_question', StaffViews.add_question, name="add_question"),
+    path('fetch_subject', StaffViews.fetch_subject, name="fetch_subject"),
+    path('add_question_save', StaffViews.add_question_save, name="add_question_save"),
 
     #student url
     path('student_home',StudentViews.student_home,name="student_home"),
@@ -101,6 +104,9 @@ urlpatterns = [
     path('student_apply_leave_save',StudentViews.student_apply_leave_save,name="student_apply_leave_save"),
     path('student_feedback',StudentViews.student_feedback,name="student_feedback"),
     path('student_feedback_save',StudentViews.student_feedback_save,name="student_feedback_save"),
+  
+
+
     
     
 

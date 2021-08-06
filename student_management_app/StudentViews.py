@@ -39,10 +39,13 @@ def student_apply_leave_save(request):
         print(user)
         print(request.user.id)
         leave_date = request.POST.get("leave_date")
+        leave_end_date=request.POST.get("leave_end_date")
         leave_message = request.POST.get("leave_message")
         student_id=Students.objects.get(admin=request.user.id)
         try:
-            leave_report = LeaveReportStudent(student_id=student_id,leave_date=leave_date,leave_message=leave_message,leave_status=1)
+            # student = Students.objects.get(admin=request.user.id)
+            course = Courses.objects.get(id=student_id.course_id.id)
+            leave_report = LeaveReportStudent(student_id=student_id,course_id=course,leave_date=leave_date,leave_end_date=leave_end_date,leave_message=leave_message,leave_status=0)
             leave_report.save()
             messages.success(request,"Successfully Applied Leave")
             return HttpResponseRedirect("/student_apply_leave")
@@ -67,7 +70,9 @@ def student_feedback_save(request):
 
         student = Students.objects.get(admin=request.user.id)
         try:
-            feedback = FeedBackStudent(student_id=student,feedback=feedback_message)
+            student = Students.objects.get(admin=request.user.id)
+            course = Courses.objects.get(id=student.course_id.id)
+            feedback = FeedBackStudent(student_id=student,feedback=feedback_message,course_id=course)
             feedback.save()
             messages.success(request,"Successfully Send Feedback")
             return HttpResponseRedirect("/student_feedback")

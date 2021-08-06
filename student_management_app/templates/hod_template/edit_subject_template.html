@@ -24,6 +24,14 @@ Edit Subject | Subject ID : {{ subject.id }}
                     <input type="text" class="form-control" name="subject_name" placeholder="Enter Subject" value="{{ subject.subject_name }}">
                     <input type="hidden" class="form-control" name="subject_id" placeholder="Enter Subject" value="{{ subject.id }}">
                   </div>
+                  <div class="form-group">
+                    <label>Semester</label>
+                    <select class="form-control" name="semester">
+                        {% for semester in semester %}
+                          <option value="{{ semester.id }}" {% if semester.id == subject.semester_id.id %} selected {% endif %}>{{semester.semester_name}}</option> 
+                        {% endfor %}
+                    </select>
+                  </div>
                    
                   <div class="form-group">
                     <label>Staff</label>

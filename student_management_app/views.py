@@ -2,7 +2,7 @@ from django import http
 from django.contrib.auth import login, logout
 from student_management_app.EmailBackEnd import EmailBackEnd
 from django.http import response
-from django.http.response import HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate
 from django.contrib import messages
@@ -62,6 +62,8 @@ def GetUserDetails(request):
 def logout_user(request):
     logout(request)
     return HttpResponseRedirect("/")
+
+
 
          
         

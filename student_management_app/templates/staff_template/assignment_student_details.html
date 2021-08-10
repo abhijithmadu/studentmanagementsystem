@@ -1,0 +1,13 @@
+
+
+
+
+<div id="student" class="card-footer">
+    <ol type="1">
+        {% for student in students %}
+        <li>
+           <h5> <a href="{% url 'assignment_subejct' student.semester_id.id student.id %}">{{student.admin.first_name}} {{student.admin.last_name}}</a> </h5>
+        </li>
+        {% endfor %}
+      </ol>
+</div>

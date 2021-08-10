@@ -1,0 +1,101 @@
+{% extends 'student_template/base_template.html' %}
+{% block page_title %}
+Exam 
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-12">
+            <!-- general form elements -->
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Exam</h3>
+              </div>
+              <!-- /.card-header -->
+              <!-- form start -->
+
+            </div>
+            <!-- /.card -->
+           <h3>Question and Options</h3>
+           <br>
+
+           {% for question  in page_obj %}
+           <h5> {{question.question}}</h5>   
+           <div class="form-group">
+            <div class="custom-control custom-radio">
+              <input class="custom-control-input" type="radio" id="customRadio1" value="{{question.option1}}" name="option">
+              <label for="customRadio1" class="custom-control-label">{{question.option1}}</label>
+            </div>
+            <div class="custom-control custom-radio">
+              <input class="custom-control-input" type="radio" id="customRadio2" value="{{question.option2}}" name="option" >
+              <label for="customRadio2" class="custom-control-label">{{question.option2}}</label>
+            </div>
+            <div class="custom-control custom-radio">
+              <input class="custom-control-input" type="radio" id="customRadio3" value="{{question.option3}}"  name="option">
+              <label for="customRadio3" class="custom-control-label">{{question.option3}}</label>
+            </div>
+            <div class="custom-control custom-radio">
+              <input class="custom-control-input" type="radio" id="customRadio4" value="{{question.option4}}" name="option">
+              <label for="customRadio4" class="custom-control-label">{{question.option4}}</label>
+            </div>
+          </div>
+          
+          {% endfor %}
+          <div class="form-group">
+          <button class="btn btn-block btn-primary btn-lg" id="save_ans">Submit</button>
+        </div>
+          <div class="pagination">
+            <div class="form-group">
+            
+              {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number}}"><button type="button" class="btn btn-block bg-gradient-secondary">Next</button></a>
+              {% else %}
+              <a href="{% url 'exam_save_answer' %}"><button  style="display: none;" class="btn btn-success form-control" id="submitAnswer">submit Test</button></a>
+           {% endif %}
+           
+          </div>
+        </div>                
+              </div>
+
+          </div>
+          </div>
+      </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+{% block custom_js %}
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+  <script>
+    window.onload=initall;
+    var saveAnsButton;
+    var submit_button;
+    function initall(){
+        console.log("automatic")
+        saveAnsButton=document.getElementById('save_ans')
+        saveAnsButton.onclick=saveans
+    }
+    function saveans(){
+        saveAnsButton=document.getElementById('save_ans')
+        submit_button=document.getElementById('submitAnswer')
+        saveAnsButton.style.display='none'
+
+        var ans=$("input:radio[name=option]:checked").val()
+        console.log(ans);
+        
+        
+ 
+        $.ajax({
+            url : "{% url 'saveanswer' %}",
+            type: "GET",
+            data:{'ans':ans},
+        })
+        submit_button.style.display='block'
+    }
+</script>
+
+{% endblock custom_js %}
+
+

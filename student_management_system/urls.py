@@ -13,6 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from froala_editor import views
+from django.conf.urls import include
 from student_management_app import StaffViews,StudentViews,superadminview
 from student_management_app import HodViews
 from student_management_app import views
@@ -21,10 +23,12 @@ from django.conf.urls.static import static
 from django.urls import path
 from student_management_system import settings
 
+
 urlpatterns = [
     path('superadminlogin',views.superadminlogin,name="superadminlogin"),
     path('superadmin_home',superadminview.superadmin_home,name="superadmin_home"),
     path('superlogin',views.superlogin,name="superlogin"),
+    path('logout_super',views.logout_super,name="logout_super"),
     path('add_course', superadminview.add_course,name="add_course"),
     path('add_course_save', superadminview.add_course_save,name="add_course_save"),
     path('manage_courses',superadminview.manage_courses,name="manage_courses"),
@@ -77,7 +81,10 @@ urlpatterns = [
     path('student_leave_disapprove/<str:leave_id>',HodViews.student_leave_disapprove,name="student_leave_disapprove"),
     path('staff_leave_approve/<str:leave_id>',HodViews.staff_leave_approve,name="staff_leave_approve"),
     path('staff_leave_disapprove/<str:leave_id>',HodViews.staff_leave_disapprove,name="staff_leave_disapprove"),
-
+    path('admin_send_notification_staff', HodViews.admin_send_notification_staff,name="admin_send_notification_staff"),
+    path('admin_send_notification_student', HodViews.admin_send_notification_student,name="admin_send_notification_student"),
+    path('send_student_notification', HodViews.send_student_notification,name="send_student_notification"),
+    path('send_staff_notification', HodViews.send_staff_notification,name="send_staff_notification"),
 
     # staff url
     path('staff_home',StaffViews.staff_home,name="staff_home"),
@@ -95,6 +102,16 @@ urlpatterns = [
     path('add_question', StaffViews.add_question, name="add_question"),
     path('fetch_subject', StaffViews.fetch_subject, name="fetch_subject"),
     path('add_question_save', StaffViews.add_question_save, name="add_question_save"),
+    path('staff_profile', StaffViews.staff_profile, name="staff_profile"),
+    path('staff_profile_save', StaffViews.staff_profile_save, name="staff_profile_save"),
+    path('staff_fcmtoken_save', StaffViews.staff_fcmtoken_save, name="staff_fcmtoken_save"), 
+    path('staff_all_notification', StaffViews.staff_all_notification, name="staff_all_notification"),
+    path('add_assignments',StaffViews.add_assignments,name="add_assignments"),
+    path('add_assigenment_save',StaffViews.add_assigenment_save,name="add_assigenment_save"),
+    path('assignment_check',StaffViews.assignment_check,name="assignment_check"),
+    path('get_students_assignment',StaffViews.get_students_assignment,name="get_students_assignment"),
+    path('assignment_subejct/<int:id><int:pk>/',StaffViews.assignment_subejct,name="assignment_subejct"),
+    path('staff_assignment_answer/<int:id><int:pk>/',StaffViews.staff_assignment_answer,name="staff_assignment_answer"),
 
     #student url
     path('student_home',StudentViews.student_home,name="student_home"),
@@ -104,10 +121,18 @@ urlpatterns = [
     path('student_apply_leave_save',StudentViews.student_apply_leave_save,name="student_apply_leave_save"),
     path('student_feedback',StudentViews.student_feedback,name="student_feedback"),
     path('student_feedback_save',StudentViews.student_feedback_save,name="student_feedback_save"),
-  
-
-
-    
-    
+    path('exam_sub_listing',StudentViews.exam_sub_listing,name="exam_sub_listing"),
+    path('exam/<int:id>/',StudentViews.exam,name="exam"),
+    path('saveanswer',StudentViews.saveanswer,name="saveanswer"),
+    path('exam_save_answer',StudentViews.exam_save_answer,name="exam_save_answer"),
+    path('student_profile', StudentViews.student_profile, name="student_profile"),
+    path('student_profile_save', StudentViews.student_profile_save, name="student_profile_save"),
+    path('student_fcmtoken_save', StudentViews.student_fcmtoken_save, name="student_fcmtoken_save"),
+    path('firebase-messaging-sw.js',views.showFirebaseJS,name="show_firebase_js"),
+    path('student_all_notification',StudentViews.student_all_notification,name="student_all_notification"),
+    path('assignment_student/<int:id>/',StudentViews.assignment_student,name="assignment_student"),
+    path('assignment_answer/<int:pk>/',StudentViews.assignment_answer,name="assignment_answer"),
+    path('assignment_subject_listing',StudentViews.assignment_subject_listing,name="assignment_subject_listing"),
+    path('froala_editor/',include('froala_editor.urls')),
 
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)+static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)

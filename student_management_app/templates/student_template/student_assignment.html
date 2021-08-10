@@ -1,0 +1,52 @@
+{% extends 'student_template/base_template.html' %}
+{% block page_title %}
+Assignment
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-12">
+            <!-- general form elements -->
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Assignment</h3>
+              </div>
+              <!-- /.card-header -->
+              <!-- form start -->
+
+            </div>
+            <!-- /.card -->
+           <h3>Assignment Questions</h3>
+           <br>
+
+           {% for question  in assignment %}
+           <h5> {{question.question}}</h5>   
+           <div class="form-group">
+            
+            <form action="{% url 'assignment_answer' question.id %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{form.media}}
+            {{form.as_p}}
+            <div class="form-group">
+                <!-- <button class="btn btn-block btn-primary btn-lg" id="save_ans">Submit</button> -->
+                <button type="submit" class="btn btn-block btn-primary">Submit Assigenment</button>
+            </div> 
+            
+        </form>
+           
+          </div>
+          
+          {% endfor %}
+                     
+        </div>
+
+          </div>
+          </div>
+      </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+
+

@@ -29,6 +29,15 @@ Leave Report And Apply leave
                     </script>
                   </div>
                   <div class="form-group">
+                    <label>Leave End Date</label>
+                    <input type="date" class="form-control" name="leave_end_date" id="leave_end_date" placeholder="Leave End Date">
+                    <script> 
+                    // document.getElementById('leave_end_date').value = new Date().toISOString().split("T")[0]
+                    
+                    document.getElementById('leave_end_date').min = new Date().toISOString().split("T")[0]
+                    </script>
+                  </div>
+                  <div class="form-group">
                     <label>Leave Reason</label>
                     <textarea class="form-control" rows="6" name="leave_message"></textarea>
                   </div>
@@ -62,7 +71,7 @@ Leave Report And Apply leave
                 <div class="table">
                     <table class="table">
                         <tr>
-                        <th>Leave Id</th>
+                        
                         <th>Leave Date</th>
                         <th>Leave Message</th>
                         <th>Leave Status</th>
@@ -70,8 +79,14 @@ Leave Report And Apply leave
                         
                         {% for leave in leave_report %}
                         <tr>
-                            <td>{{leave.id}}</td>
-                            <td>{{leave.leave_date}}</td>
+                            
+                          <td>
+                            {% if leave.leave_end_date == "" or leave.leave_end_date == "0" %}
+                            {{leave.leave_date}}
+                            {% else %}
+                            {{leave.leave_date}} To {{leave.leave_end_date}}
+                            {% endif %}
+                          </td>
                             <td>{{leave.leave_message}}</td>
                             <td>
                                 

@@ -34,7 +34,13 @@ Staff Leave
                           <!-- <td>{{leave.id}}</td> -->
                           <td>{{leave.staff_id.admin.id}}</td>
                           <td>{{leave.staff_id.admin.first_name}} {{leave.staff_id.admin.last_name}}</td>
-                          <td>{{leave.leave_date}}{{leave.leave_end_date}}</td>
+                          <td>
+                            {% if leave.leave_end_date == "" or leave.leave_end_date == "0" %}
+                            {{leave.leave_date}}
+                            {% else %}
+                            {{leave.leave_date}} To {{leave.leave_end_date}}
+                            {% endif %}
+                          </td>
                           <td>{{leave.leave_message}}</td>
                           <td>{{leave.created_at}}</td>
                           <td>
@@ -46,8 +52,7 @@ Staff Leave
                             <button class="btn btn-warning" disabled="disabled" >Approved</button>
                             {% else %}
                             <button class="btn btn-danger" disabled="disabled" >Disapproved</button>
-                  
-                            {% endif %}      
+                            {% endif %}   
                         </td>
                       </tr>
                           

@@ -1,0 +1,142 @@
+{% extends 'staff_template/base_template.html' %}
+{% block page_title %}
+View Assignements
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+                    <div class="row">
+              <div class="col-md-12">
+            <!-- general form elements -->
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">View Assignements</h3>
+              </div>
+              <!-- /.card-header -->
+              <!-- form start -->
+                <div class="card-body">
+                   <div class="form-group">
+                    <label>Semester</label>
+                    <select class="form-control" name="semester" id="semester">
+                        {% for semester in semester %}
+                          <option value="{{ semester.id }}">{{ semester.semester_name }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+                   <div class="form-group">
+                      {% if messages %}
+                        {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                        <div class="alert alert-danger" style="margin-top:10px">{{ message }}</div>
+                        {% endif %}
+                        {% if message.tags == 'success' %}
+                        <div class="alert alert-success" style="margin-top:10px">{{ message }}</div>
+                        {% endif %}
+                        {% endfor %}
+                      {% endif %}
+                    </div>
+
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-footer">
+                  <button type="button" class="btn btn-primary btn-block" id="fetch_student">Fetch Student</button>
+                </div>
+                <div id="student" class="card-footer">
+
+                </div>
+            </div>
+            <!-- /.card -->
+
+
+
+          </div>
+          </div>
+      </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+{% block custom_js %}
+<script>
+    $(document).ready(function(){
+        $("#fetch_student").click(function(){
+            var semester=$("#semester").val()
+
+            $.ajax({
+                url:"{% url 'get_students_assignment' %}",
+                type:'POST',
+                data:{semester:semester},
+            })
+            .done(function(response){
+                console.log(response);
+                $("#student").html(response.key)
+                // var json_data=JSON.parse(response);
+                // var stu=document.getElementById('student')
+                // console.log(json_data,"hai jeloo")
+                // // var div_data="<div class='form-group'><label>Attendance Date : </label><input type='date' name='attendance_date' id='attendance_date' class='form-control'></div><div class='form-group'><div class='row'>";
+                // console.log(div_data);
+                // for(key in json_data)
+                // {
+                //     stu.innerHTML+=`<a href=''>+json_data[key]['name']+</a>`
+
+
+                //     // div_data+="<div class='col-lg-2'><div class='form-check'><input name='student_data[]' value='"+json_data[key]['id']+"'><label class='form-check-label'>"+json_data[key]['name']+"</label></div></div>";
+                // }
+                // div_data+="</div></div>";
+                // div_data+="<div class='form-group'>";
+                // div_data+="<button id='save_attendance' class='btn btn-success btn-block' type='button'>Save Attendance Data</button>";
+                // div_data+="</div>";
+                // console.log(div_data,"hai hello")
+
+                // $("#student_data").html(div_data);
+            
+
+            })
+            .fail(function(){
+                alert("Error in Fetching Student")
+            })
+
+
+            // $(document).on("click","#save_attendance",function(){
+
+            //     $(this).attr("disabled","disabled")
+            //     $(this).text("Saving Attendance Data...")
+            //     var student_data=$("input[name='student_data[]']").map(function(){
+            //             if($(this).is(":checked")){
+            //                 return {"id":$(this).val(),"status":1};
+            //             }
+            //             else{
+            //                 return {"id":$(this).val(),"status":0};
+            //             }
+            //      }).get()
+            //     var attendance_date=$("#attendance_date").val();
+            //     console.log(attendance_date);
+            //     var subject_id=$("#subject").val();
+            //     var session_year_id=$("#session_year").val();
+            //     console.log(student_data)
+            //     student_data=JSON.stringify(student_data)
+
+            //     $.ajax({
+            //             url:"{% url 'save_attendance_data' %}",
+            //             type:'POST',
+            //             data:{student_ids:student_data,attendance_date:attendance_date,subject_id:subject_id,session_year_id:session_year_id},
+            //         })
+            //         .done(function(response){
+
+            //             if(response=="OK"){
+            //                 alert("Attendance Save")
+            //             }
+            //             else{
+            //                 alert("Error in Saving Data")
+            //             }
+            //             location.reload()
+            //         })
+            //         .fail(function(){
+            //             alert("Error in Saving Student")
+            //         })
+            // })
+        })
+    })
+</script>
+{% endblock custom_js %}

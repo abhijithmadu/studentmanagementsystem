@@ -1,10 +1,11 @@
+import requests
 from django.conf.urls.static import static
 from django.contrib import admin, messages
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from .models import AdminHOD, Courses, CustomUser, FeedBackStaffs, FeedBackStudent, LeaveReportStaff, LeaveReportStudent, Semester, SessionYearModel, Staffs, Students, Subjects
-
+from .models import AdminHOD, Courses, CustomUser, FeedBackStaffs, FeedBackStudent, LeaveReportStaff, LeaveReportStudent, NotificationStaffs, NotificationStudent, Semester, SessionYearModel, Staffs, Students, Subjects
+import json
 def admin_home(request):
     return render(request,"hod_template/home_content.html")
 
@@ -409,7 +410,61 @@ def staff_leave_disapprove(request,leave_id):
     leave.save()
     return HttpResponseRedirect("/staff_leave_view")
 
+def admin_send_notification_student(request):
+    admin_id = AdminHOD.objects.get(admin=request.user.id)
+    courses=Courses.objects.get(id=admin_id.course_id.id)
+    students = Students.objects.filter(course_id=courses)
+    return render(request,"hod_template/student_notification.html",{"students":students})
 
+def admin_send_notification_staff(request):
+    admin_id = AdminHOD.objects.get(admin = request.user.id)
+    course=Courses.objects.get(id=admin_id.course_id.id)
+    staffs=Staffs.objects.filter(course_id=course)
+    return render(request,"hod_template/staff_notification.html",{"staffs":staffs})
+
+@csrf_exempt
+def send_student_notification(request):
+    id=request.POST.get("id")
+    message=request.POST.get("message")
+    student=Students.objects.get(admin=id)
+    token=student.fcm_token
+    url="https://fcm.googleapis.com/fcm/send"
+    body={
+        "notification":{
+            "title":"Student Management System",
+            "body":message,
+        },
+        "to":token
+    }
+    headers={"Content-Type":"application/json","Authorization":"key=AAAAUyVC3ik:APA91bEv7dCa_E9pAWtppa-eDVAnDZZvddVJG4lUsHBmrg4rJpLlbUyC88NYKO9qJmADR1xkAqwHxh-lfM1hTka6Z8BDs9L--WpOXRqPwPqfpjhT5tGBbWqEtOJ8arxIh53V5HLihaAd"}
+    data=requests.post(url,data=json.dumps(body),headers=headers)
+    notification=NotificationStudent(student_id=student,message=message)
+    notification.save()
+    print(data.text)
+    return HttpResponse("True")
+
+@csrf_exempt
+def send_staff_notification(request):
+    id=request.POST.get("id")
+    message=request.POST.get("message")
+    staff=Staffs.objects.get(admin=id)
+    token=staff.fcm_token
+    url="https://fcm.googleapis.com/fcm/send"
+    body={
+        "notification":{
+            "title":"Student Management System",
+            "body":message,
+            "click_action":"",
+            "icon":""
+        },
+        "to":token
+    }
+    headers={"Content-Type":"application/json","Authorization":"key=AAAAUyVC3ik:APA91bEv7dCa_E9pAWtppa-eDVAnDZZvddVJG4lUsHBmrg4rJpLlbUyC88NYKO9qJmADR1xkAqwHxh-lfM1hTka6Z8BDs9L--WpOXRqPwPqfpjhT5tGBbWqEtOJ8arxIh53V5HLihaAd"}
+    data=requests.post(url,data=json.dumps(body),headers=headers)
+    notification=NotificationStaffs(staff_id=staff,message=message)
+    notification.save()
+    print(data.text)
+    return HttpResponse("True")
 
 
 

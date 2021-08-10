@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models.deletion import CASCADE
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from froala_editor.fields import FroalaField
 
 class SessionYearModel(models.Model):
     id = models.AutoField(primary_key=True)
@@ -81,7 +82,7 @@ class Attendance(models.Model):
     id = models.AutoField(primary_key=True)
     subject_id = models.ForeignKey(Subjects, on_delete=models.DO_NOTHING)
     attendance_date = models.DateField()
-    session_year_id=models.ForeignKey(SessionYearModel, on_delete=models.CASCADE)
+    semester_id = models.ForeignKey(Semester,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     objects = models.Manager()
@@ -91,6 +92,7 @@ class AttendanceReport(models.Model):
     id = models.AutoField(primary_key=True)
     student_id = models.ForeignKey(Students, on_delete=models.DO_NOTHING)
     attendance_id = models.ForeignKey(Attendance, on_delete=models.CASCADE)
+    semester_id = models.ForeignKey(Semester,on_delete=models.CASCADE)
     status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
@@ -114,6 +116,7 @@ class LeaveReportStaff(models.Model):
     id = models.AutoField(primary_key=True)
     staff_id = models.ForeignKey(Staffs, on_delete=models.CASCADE)
     leave_date = models.CharField(max_length=255)
+    leave_end_date = models.CharField(max_length=255,default=0)
     leave_message = models.TextField()
     leave_status = models.IntegerField(default=0)
     course_id = models.ForeignKey(Courses,on_delete=CASCADE,default=1)
@@ -168,6 +171,8 @@ class Question(models.Model):
     option3=models.CharField(max_length=200)
     option4=models.CharField(max_length=200)
     answer=models.CharField(max_length=200)
+    semester = models.ForeignKey(Semester,on_delete=models.CASCADE,default=1)
+    staff_id = models.ForeignKey(Staffs,on_delete=models.CASCADE,default=1)
     course_id = models.ForeignKey(Courses, on_delete=models.CASCADE,default=1)
     subject_id = models.ForeignKey(Subjects,on_delete=models.CASCADE,default=1)
 
@@ -182,6 +187,29 @@ class StudentResult(models.Model):
     updated_at = models.DateField(auto_now_add=True)
     objects = models.Manager()
 
+class Assignment(models.Model):
+    id = models.AutoField(primary_key=True)
+    question = models.CharField(max_length=600)
+    answer = FroalaField(blank = True, null=True)
+    subject_id = models.ForeignKey(Subjects,on_delete=models.CASCADE)
+    staff_id = models.ForeignKey(Staffs,on_delete=models.CASCADE)
+    course_id = models.ForeignKey(Courses,on_delete=models.CASCADE)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now_add=True)
+    objects = models.Manager()
+
+
+class AssignmentAnswer(models.Model):
+    id=models.AutoField(primary_key=True)
+    question_id = models.ForeignKey(Assignment,on_delete=CASCADE,default="")
+    answer = FroalaField(blank = True, null=True)
+    subject_id = models.ForeignKey(Subjects,on_delete=models.CASCADE, null=True,blank=True)
+    course_id = models.ForeignKey(Courses,on_delete=models.CASCADE,null=True,blank=True)
+    student_id = models.ForeignKey(Students, on_delete=models.CASCADE)
+    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now_add=True)
+    objects = models.Manager()
 
 class OnlineClassRoom(models.Model):
     id = models.AutoField(primary_key=True)

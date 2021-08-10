@@ -1,4 +1,4 @@
-from student_management_app.models import Courses, CustomUser, Question, Semester
+from student_management_app.models import Assignment, AssignmentAnswer, Courses, CustomUser, NotificationStaffs, Question, Semester
 from student_management_app.models import FeedBackStaffs
 from django.contrib import messages
 from student_management_app.models import Staffs
@@ -10,6 +10,8 @@ from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, reques
 import json
 from django.core import serializers
 from django.db import models
+from django.urls import reverse
+from django.template.loader import render_to_string
 
 
 def staff_home(request):
@@ -17,22 +19,19 @@ def staff_home(request):
 
 
 def staff_take_attendance(request):
-    subjects=Subjects.objects.filter(staff_id=request.user.id)
-    session_years=SessionYearModel.objects.all()
+    admin = Staffs.objects.get(admin = request.user.id)
+    semester = Semester.objects.filter(course = admin.course_id.id)
     context={
-        "subjects":subjects,
-        "session_years":session_years
+       "semester":semester 
+       
         }
     return render(request,"staff_template/staff_take_attendance.html",context)
 
 @csrf_exempt
 def get_students(request):
-    subject_id=request.POST.get("subject")
-    session_year=request.POST.get("session_year")
-
-    subject=Subjects.objects.get(id=subject_id)
-    session_model=SessionYearModel.objects.get(id=session_year)
-    students=Students.objects.filter(course_id=subject.course_id,session_year_id=session_model)
+    semester_id=request.POST.get("semester")
+    semseter = Semester.objects.get(id=semester_id)
+    students=Students.objects.filter(semester_id=semseter)
     list_data=[]
 
     for student in students:
@@ -46,24 +45,29 @@ def save_attendance_data(request):
     subject_id=request.POST.get("subject_id")
     attendance_date=str(request.POST.get("attendance_date"))
     print(attendance_date)
-    session_year_id=request.POST.get("session_year_id")
+    semester=request.POST.get("semester")
 
     subject_model=Subjects.objects.get(id=subject_id)
-    session_model=SessionYearModel.objects.get(id=session_year_id)
+    semester_model = Semester.objects.get(id=semester)
     json_sstudent=json.loads(student_ids)
+    print(json_sstudent,"hellomhsbdhbchjds")
 
     try:
-        attendance=Attendance(subject_id=subject_model,attendance_date=attendance_date,session_year_id=session_model)
+        print("inside try")
+        attendance=Attendance(subject_id=subject_model,attendance_date=attendance_date,semester_id=semester_model)
         attendance.save()
         print(attendance.attendance_date)
 
         for stud in json_sstudent:
-             student=Students.objects.get(admin=stud['id'])
-             attendance_report=AttendanceReport(student_id=student,attendance_id=attendance,status=stud['status'])
-             attendance_report.save()
+            print(stud,"hai helllop")
+            student=Students.objects.get(admin=stud['id'])
+            attendance_report=AttendanceReport(student_id=student,attendance_id=attendance,status=stud['status'],semester_id=semester_model)
+            attendance_report.save()
         return HttpResponse("OK")
     except:
+        print("inside exc")
         return HttpResponse("ERR")
+
 
 def staff_update_attendance(request):
     subjects=Subjects.objects.filter(staff_id=request.user.id)
@@ -134,13 +138,14 @@ def staff_apply_leave_save(request):
         return HttpResponse("Method not allowed")
     else:
         leave_date = request.POST.get("leave_date")
+        leave_end_date=request.POST.get("leave_end_date")
         leave_message = request.POST.get("leave_message")
         print(request.user.id)
        
         try:
             staff= Staffs.objects.get(admin=request.user.id)
             course = Courses.objects.get(id=staff.course_id.id)
-            leave_report = LeaveReportStaff(staff_id=staff,leave_date=leave_date,course_id=course,leave_message=leave_message,leave_status=0)
+            leave_report = LeaveReportStaff(staff_id=staff,leave_date=leave_date,leave_end_date=leave_end_date,course_id=course,leave_message=leave_message,leave_status=0)
             leave_report.save()
             messages.success(request,"Successfully Applied Leave")
             return HttpResponseRedirect("/staff_apply_leave")
@@ -168,18 +173,42 @@ def staff_feedback_save(request):
         messages.success(request,"Successfully send message")
         return HttpResponseRedirect("/staff_feedback")
 
+def add_assignments(request):
+    admin = Staffs.objects.get(admin=request.user.id)
+    semester = Semester.objects.filter(course = admin.course_id.id)
+    subject = Subjects.objects.filter(semester_id=semester)
+    context = {
+        "semester":semester,
+    }
+    return render(request,"staff_template/add_assignment.html",context)
+
+def add_assigenment_save(request):
+    if request.method != 'POST':
+        HttpResponse("Method Norequestt Allowed")
+    else:
+        semester = request.POST.get("semester_id")
+        subject = request.POST.get("subject")
+        question = request.POST.get("add_question")
+        try:
+            staff = Staffs.objects.get(admin=request.user.id)
+            course = Courses.objects.get(id = staff.course_id.id)
+            subject_obj = Subjects.objects.get(id=subject)
+            assignment = Assignment(question=question)
+            assignment.staff_id = staff
+            assignment.semester_id = semester
+            assignment.course_id=course
+            assignment.subject_id = subject_obj
+            assignment.save()
+            messages.success(request,"Successfully Added Questions")
+            return HttpResponseRedirect("/add_assignments")
+        except:
+            messages.error(request,"Failed To Added Questions")
+            return HttpResponseRedirect("/add_assignments")
+
+def assigement_answer(request):
+    pass
+
 def add_question(request):
-   
-    # staff = CustomUser.objects.get(id=request.user.id)
-    # print(staff)
-    # admin = Staffs.objects.get(admin = staff)
-    # semester = Semester.objects.filter(course = admin.course_id.id)
-    # subjects = Subjects.objects.filter(staff_id = staff)
-    # print(subjects)
-    # context = {
-    #     "subjects":subjects,
-    #     "semester":semester,
-    # }
     admin = Staffs.objects.get(admin = request.user.id)
     print(admin)
     semester = Semester.objects.filter(course = admin.course_id.id)
@@ -187,7 +216,6 @@ def add_question(request):
     print(semester)
     context = {
         "semester":semester,
-        # "subject":subject
     }
     return render(request,"staff_template/add_question_template.html",context)
 
@@ -206,14 +234,164 @@ def add_question_save(request):
     else:
         semester = request.POST.get("semester_id")
         subject = request.POST.get("subject")
+        print(subject,"this is for testing")
         question = request.POST.get("add_question")
         option1 = request.POST.get("option1")
         option2 = request.POST.get("option2")
         option3 = request.POST.get("option3")
         option4 = request.POST.get("option4")
-        answer = request.POST.get("answer")
+        mark = request.POST.get("mark")
+        ans = request.POST.get("answer")
 
+        if ans == 'option1':
+            answer = option1
+        elif ans == 'option2':
+            answer = option2
+        elif ans == 'option3':
+            answer = option3
+        elif ans == 'option4':
+            answer = option4
+
+
+        staff = Staffs.objects.get(admin=request.user.id)
+        course = Courses.objects.get(id = staff.course_id.id)
+        subject_obj = Subjects.objects.get(id=subject)
+        print(semester)
+        questions_models = Question(question=question,option1=option1,option2=option2,option3=option3,option4=option4,answer=answer,marks=mark)
+        questions_models.semester_id = semester
+        questions_models.course_id=course
+        questions_models.subject_id = subject_obj
+        questions_models.save()
+        messages.success(request,"Successfully Added Questions")
+        return HttpResponseRedirect("/add_question")
+
+def staff_profile(request):
+    user = CustomUser.objects.get(id=request.user.id)
+    staff = Staffs.objects.get(admin = user)
+    return render(request,"staff_template/staff_profile.html",{"user":user,"staff":staff})
+
+def staff_profile_save(request):
+    if request.method!="POST":
+        return HttpResponseRedirect(reverse("staff_profile"))
+    else:
+        first_name=request.POST.get("first_name")
+        last_name=request.POST.get("last_name")
+        address=request.POST.get("address")
+        password=request.POST.get("password")
+        try:
+            customuser=CustomUser.objects.get(id=request.user.id)
+            customuser.first_name=first_name
+            customuser.last_name=last_name
+            if password!=None and password!="":
+                customuser.set_password(password)
+            customuser.save()
+
+            staff=Staffs.objects.get(admin=customuser.id)
+            staff.address=address
+            staff.save()
+            messages.success(request, "Successfully Updated Profile")
+            return HttpResponseRedirect(reverse("staff_profile"))
+        except:
+            messages.error(request, "Failed to Update Profile")
+            return HttpResponseRedirect(reverse("staff_profile"))
+    
+@csrf_exempt
+def staff_fcmtoken_save(request):
+    token=request.POST.get("token")
+    try:
+        staff=Staffs.objects.get(admin=request.user.id)
+        staff.fcm_token=token
+        staff.save()
+        return HttpResponse("True")
+    except:
+        return HttpResponse("False")
+
+def staff_all_notification(request):
+    staff=Staffs.objects.get(admin=request.user.id)
+    notifications=NotificationStaffs.objects.filter(staff_id=staff.id)
+    return render(request,"staff_template/all_notification.html",{"notifications":notifications})
+
+
+def assignment_check(request):
+    staff = Staffs.objects.get(admin = request.user.id)
+    course_id = Courses.objects.get(id=staff.course_id.id)
+    semester = Semester.objects.filter(course=course_id)
+    context = {
+        "semester":semester,
+    }
+    return render(request,"staff_template/assignment_view.html",context)
+
+@csrf_exempt
+def get_students_assignment(request):
+    semester=request.POST.get("semester")
+    semester_model=Semester.objects.get(id=semester)
+    students=Students.objects.filter(semester_id=semester_model)
+    context = {
+        "students":students,
+    }
+    print(students,"hai he;llooooooooo")
+    data = render_to_string("staff_template/assignment_student_details.html",context)
+    return JsonResponse({"key":data})
+    # list_data=[]
+
+    # for student in students:
+    #     data_small={"id":student.admin.id,"name":student.admin.first_name+" "+student.admin.last_name}
+    #     list_data.append(data_small)
+    # return JsonResponse(json.dumps(list_data),content_type="application/json",safe=False)
+
+def assignment_subejct(request,id,pk):
+    # staff = Staffs.objects.get(admin = request.user.id)
+    # course_id = Courses.objects.get(id = staff.course_id.id)
+    student = Students.objects.get(id=pk)
+    print(student)
+    semester = Semester.objects.get(id=id)
+    subject = Subjects.objects.filter(semester_id = semester)
+    print(semester)
+    print(subject,"subject")
+    context = {
+        "student":student,
+        "subject":subject
+    }
+    return render(request,"staff_template/assignment_subject.html",context)
+
+def staff_assignment_answer(request,id,pk):
+    # student = Students.objects.get(id=id)
+    subject = Subjects.objects.get(id=pk)
+    print(subject)
+    # answer = AssignmentAnswer.objects.filter(student_id=id)
+    assign_ans = AssignmentAnswer.objects.filter(student_id=id,subject_id=subject)
+   
+
+    #question = Assignment.objects.filter(id=answer.question_id)
+    # for i in answer:
+    #     print(answer,"athif")
+    #     print(i.question_id,"singam abhi")
+    #     print(i.answer,"thakkudu")
+    # ques_lis = []
+
+    # for i in answer:
+    #     ques_lis.append(i.question_id)
+    # print(ques_lis)
+    
+  
+    context={
         
+        "answer":assign_ans, 
+    }
+    return render(request,"staff_template/assignement_answer.html",context)
+   
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

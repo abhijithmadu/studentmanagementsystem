@@ -16,7 +16,7 @@
         <img src="{% static "dist/img/user2-160x160.jpg" %}" class="img-circle elevation-2" alt="User Image">
       </div>
       <div class="info">
-        <a href="" class="d-block">{{ user.username }}</a>
+        <a href="{% url 'staff_profile' %}" class="d-block">{{ user.username }}</a>
       </div>
     </div>
 
@@ -72,10 +72,38 @@
         </li>
         <li class="nav-item">
           
+          <a href="{% url 'add_assignments'  %}" class="nav-link {% if request.path == add_assignments %} active {% endif %}">
+            <i class="nav-icon fas fa-th"></i>
+            <p>
+              Add Assignment Question
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          
+          <a href="{% url 'assignment_check'  %}" class="nav-link {% if request.path == add_assignments %} active {% endif %}">
+            <i class="nav-icon fas fa-th"></i>
+            <p>
+              Assignment View 
+            </p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+
           <a href="{% url 'add_question'  %}" class="nav-link {% if request.path == staff_take_attendance %} active {% endif %}">
             <i class="nav-icon fas fa-th"></i>
             <p>
               Add Question
+            </p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="{% url 'staff_all_notification' %}" class="nav-link ">
+            <i class="nav-icon fas fa-th"></i>
+            <p>
+              Notification 
             </p>
           </a>
         </li>

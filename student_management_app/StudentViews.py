@@ -1,12 +1,15 @@
-from student_management_app.models import AttendanceReport
+from student_management_app.form import AssignementForm
+from django.views.decorators.csrf import csrf_exempt
+from student_management_app.models import Assignment, AssignmentAnswer, AttendanceReport, NotificationStudent, Question, Semester
 from student_management_app.models import Attendance, CustomUser
 from student_management_app.models import Courses, Subjects
 from student_management_app.models import FeedBackStudent
 from django.contrib import admin, messages
 from student_management_app.models import LeaveReportStudent, Students
-from django.http.response import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect, render
 import datetime
+from django.core.paginator import EmptyPage, InvalidPage, Paginator
 
 def student_home(request):
     student = Students.objects.get(admin=request.user.id)
@@ -113,3 +116,182 @@ def student_view_attendence_save(request):
     #     print(start_data)
     #     print(end_data)
     #     return HttpResponse("OK")
+def exam_sub_listing(request):
+    student = Students.objects.get(admin=request.user.id)
+    semester = Semester.objects.get(id = student.semester_id.id) 
+    subject = Subjects.objects.filter(semester_id = semester)
+    print(subject)
+    context = {
+        "subject":subject,
+    }
+    return render(request,"student_template/exam_subject_list.html",context)
+
+def exam(request,id):
+    count = 0
+    student = Students.objects.get(admin=request.user.id)
+    print(student)
+    semester = Semester.objects.get(id = student.semester_id.id)
+    print(semester)
+    subject = Subjects.objects.get(id = id)
+    print(subject,"usahkuhaSKDHSDKHSADKJHKASIDJJDJ")
+    question = Question.objects.filter(subject_id = subject)
+    print(question)
+   
+    for ques in question:
+        request.session['answer'+str(count)]=ques.answer
+        count +=1
+    
+    print(request.session['answer0'],"answer load")
+    print(request.session['answer1'],"answer load")
+    print(request.session['answer2'],"answer load")
+ 
+    paginator = Paginator(question, 1)
+    try:
+        page=int(request.GET.get('page','1'))
+    except:
+        page=1
+    try:
+        page_obj = paginator.page(page)
+    except(EmptyPage,InvalidPage):
+        page_obj = paginator.page(paginator.num_pages)
+
+    context = {
+        "question":question,
+        "page_obj":page_obj,
+    }
+    return render(request,"student_template/student_exam_template.html",context) 
+
+answer_list = []
+def saveanswer(request):
+    if request.method == 'GET':
+        option = request.GET['ans']
+        answer_list.append(option)
+        print(answer_list)
+    print(answer_list)    
+    return JsonResponse({"key":"value"})
+
+def exam_save_answer(request):
+    print(answer_list)
+    score=0
+    for i in range(3):
+        if request.session['answer'+str(i)] == answer_list[i]:
+            score+=1
+    answer_list.clear()
+    return HttpResponse(score)
+
+def student_profile(request):
+    user = CustomUser.objects.get(id=request.user.id)
+    student = Students.objects.get(admin = user)
+    return render(request,"student_template/student_profile.html",{"user":user,"student":student})
+
+def student_profile_save(request):
+    if request.method != 'POST':
+        return HttpResponse("Method Not Allowed")
+    else:
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        address = request.POST.get("address")
+        password = request.POST.get("password")
+        try:
+            customuser = CustomUser.objects.get(id = request.user.id)
+            customuser.first_name = first_name
+            customuser.last_name = last_name
+            if password!=None and password!="":
+                customuser.set_password(password)
+            customuser.save()
+
+            student = Students.objects.get(admin=customuser.id)
+            student.address = address
+            student.save()
+            messages.success(request,"Successfully Update Profile")
+            return HttpResponseRedirect("/student_profile")
+        except:
+            messages.error(request,"Failed To Update Profile")
+            return HttpResponseRedirect("/student_profile")
+@csrf_exempt
+def student_fcmtoken_save(request):
+    token=request.POST.get("token")
+    try:
+        student=Students.objects.get(admin=request.user.id)
+        student.fcm_token=token
+        student.save()
+        return HttpResponse("True")
+    except:
+        return HttpResponse("False")
+
+def student_all_notification(request):
+    student=Students.objects.get(admin=request.user.id)
+    notifications=NotificationStudent.objects.filter(student_id=student.id)
+    return render(request,"student_template/all_notification.html",{"notifications":notifications})
+
+def assignment_subject_listing(request):
+    student = Students.objects.get(admin=request.user.id)
+    semester = Semester.objects.get(id = student.semester_id.id) 
+    subject = Subjects.objects.filter(semester_id = semester)
+    print(subject)
+    context = {
+        "subject":subject,
+    }
+    return render(request,"student_template/assignment_sub_listing.html",context)
+
+
+def assignment_student(request,id):
+    
+    student = Students.objects.get(admin=request.user.id)
+    semester = Semester.objects.get(id = student.semester_id.id)
+    subject = Subjects.objects.get(id = id)
+    assignment = Assignment.objects.filter(subject_id = subject)
+    form = AssignementForm()
+    context = {
+        "assignment":assignment,
+        "form":form,
+    }
+
+    return render(request,"student_template/student_assignment.html",context)
+
+def assignment_answer(request,pk):
+    # form = AssignementForm()
+    # if request.method == 'POST':
+    #     assign = Assignment.objects.get(id=pk)
+    #     answer = request.POST['answer']
+    #     assign.answer=answer
+    #     assign.save()
+    # return redirect("assignment_subject_listing")
+    if request.method != 'POST':
+        HttpResponse("Method Not Allowed")
+    else:    
+        student = Students.objects.get(admin=request.user.id)
+        print("student---",student)
+        assign = Assignment.objects.get(id=pk)
+        print("--assign---",assign)
+        course = Courses.objects.get(id = student.course_id.id)
+        print("course----",course)
+        answer = request.POST.get('answer')
+        subject = Subjects.objects.get(id=assign.subject_id.id)
+        try:
+            assignment_answer = AssignmentAnswer()
+            assignment_answer.answer = answer
+            assignment_answer.subject_id = subject
+            assignment_answer.question_id = assign
+            assignment_answer.student_id = student
+            assignment_answer.save()
+            messages.success(request,"Successfully Add Answer")
+            return HttpResponseRedirect("/assignment_subject_listing")
+    
+        except:
+            messages.error(request,"Successfully Add Answer")
+            return HttpResponseRedirect("/assignment_subject_listing")
+    
+
+
+
+
+        
+        
+    
+
+
+    
+    
+
+

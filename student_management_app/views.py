@@ -20,15 +20,18 @@ def superlogin(request):
         HttpResponse("Method Not allowed")
     else:
         username = "super@gmail.com"
-        password = "super" 
+        pwd = "super" 
         email = request.POST.get("email")
         password = request.POST.get("password")
-        if username == email and password == password:
+        if username == email and pwd == password:
             return HttpResponseRedirect("/superadmin_home")
         else:
             messages.error(request,"Invalid Login Details")
             return HttpResponseRedirect("/superadminlogin")
 
+def logout_super(request):
+    logout(request)
+    return HttpResponseRedirect("/superadminlogin")
 
 def loginPage(request):
     return render(request,"login_page.html")
@@ -62,6 +65,32 @@ def GetUserDetails(request):
 def logout_user(request):
     logout(request)
     return HttpResponseRedirect("/")
+
+def showFirebaseJS(request):
+    data='importScripts("https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js");' \
+         'importScripts("https://www.gstatic.com/firebasejs/8.8.1/firebase-messaging.js");' \
+         'var firebaseConfig = {' \
+         '        apiKey: "AIzaSyBnrjKzEc33BZE_sKA8KrEv336i7sI5k7o",' \
+         '        authDomain: "studentmanagementsystem-2fdee.firebaseapp.com",' \
+         '        projectId: "studentmanagementsystem-2fdee",' \
+         '        storageBucket: "studentmanagementsystem-2fdee.appspot.com",' \
+         '        messagingSenderId: "357107424809",' \
+         '        appId: "1:357107424809:web:b80271c2deb98080598638",' \
+         '        measurementId: "G-PZR89HF1TQ"' \
+         ' };' \
+         'firebase.initializeApp(firebaseConfig);' \
+         'const messaging=firebase.messaging();' \
+         'messaging.setBackgroundMessageHandler(function (payload) {' \
+         '    console.log(payload);' \
+         '    const notification=JSON.parse(payload);' \
+         '    const notificationOption={' \
+         '        body:notification.body,' \
+         '        icon:notification.icon' \
+         '    };' \
+         '    return self.registration.showNotification(payload.notification.title,notificationOption);' \
+         '});'
+
+    return HttpResponse(data,content_type="text/javascript")
 
 
 

@@ -1,0 +1,53 @@
+{% extends 'staff_template/base_template.html' %}
+{% block page_title %}
+Ateendence Details
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-12">
+            <!-- general form elements -->
+            <!-- /.card -->
+            <div class="card card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">Attendence Details</h3>
+                </div>
+
+                <div class="table">
+                    <table class="table">
+                        <tr>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        </tr>
+                        
+                        {% for attendence_report in attendence_report %}
+                        <tr>
+                           
+                            <td>{{ attendence_report.attendance_id.attendance_date }}</td>
+                            
+                            <td>{{attendence_report.attendance_id.subject_id.subject_name}}</td>
+                            {% if attendence_report.status == True %}
+                            <td style="color:green;font-size: 20px;">Present</td>
+                            {% else %}
+                            <td style="color: red;font-size: 20px;">Absent</td>
+                            {% endif %}
+                        </tr>  
+                        {% endfor %}
+                            
+                    </table>
+
+                </div>
+              
+                
+              </div>
+
+          </div>
+          </div>
+      </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+

@@ -133,6 +133,9 @@ urlpatterns = [
     path('assignment_student/<int:id>/',StudentViews.assignment_student,name="assignment_student"),
     path('assignment_answer/<int:pk>/',StudentViews.assignment_answer,name="assignment_answer"),
     path('assignment_subject_listing',StudentViews.assignment_subject_listing,name="assignment_subject_listing"),
+    path('attendence_view',StudentViews.attendence_view,name="attendence_view"),
+    path('student_view_attendance_post',StudentViews.student_view_attendance_post,name="student_view_attendance_post"),
     path('froala_editor/',include('froala_editor.urls')),
+
 
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)+static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)

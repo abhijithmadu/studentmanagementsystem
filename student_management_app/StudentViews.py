@@ -107,7 +107,7 @@ def student_view_attendence_save(request):
     user_obj = CustomUser.objects.get(id=request.user.id)
     student_obj=Students.objects.get(admin=user_obj)
 
-    attendence = Attendance.objects.filter(attendance_date__range=(start_data,end_data),subject_id=subject_obj)
+    attendence = Attendance.objects.filter(attendance_date=(start_data,end_data),subject_id=subject_obj)
     attendence_report = AttendanceReport.objects.filter(attendance_id__in=attendence,student_id=student_obj)
     return render(request,"student_template/student_attendence_details.html",{"attendence_report":attendence_report})
     # print(attendence)
@@ -116,6 +116,28 @@ def student_view_attendence_save(request):
     #     print(start_data)
     #     print(end_data)
     #     return HttpResponse("OK")
+
+def attendence_view(request):
+    return render(request,"student_template/student_attendance_view.html")
+
+def student_view_attendance_post(request):
+    date = request.POST.get("date")
+    print(date)
+    data =datetime.datetime.strptime(date,"%Y-%m-%d").date()
+    print(data)
+    student =Students.objects.get(admin=request.user.id)
+    semester = Semester.objects.get(id = student.semester_id.id)
+    # subject = Subjects.objects.filter(semester_id=semester.id)
+    print(semester)
+    attendence = Attendance.objects.filter(attendance_date=data,semester_id=semester)
+    print(attendence)
+    attendence_report = AttendanceReport.objects.filter(attendance_id__in=attendence,student_id=student)
+    print(attendence_report)
+    context = {
+        "attendence_report":attendence_report,
+    }
+    return render(request,"student_template/student_attendance_post.html",context)
+
 def exam_sub_listing(request):
     student = Students.objects.get(admin=request.user.id)
     semester = Semester.objects.get(id = student.semester_id.id) 
@@ -172,12 +194,15 @@ def saveanswer(request):
 
 def exam_save_answer(request):
     print(answer_list)
-    score=0
+    mark = 0
     for i in range(3):
         if request.session['answer'+str(i)] == answer_list[i]:
-            score+=1
+            mark+=5
     answer_list.clear()
-    return HttpResponse(score)
+    context = {
+        "mark":mark,
+    }
+    return render(request,"student_template/congragulation.html",context)
 
 def student_profile(request):
     user = CustomUser.objects.get(id=request.user.id)

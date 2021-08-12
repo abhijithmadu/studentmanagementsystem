@@ -18,16 +18,27 @@ Assignment Answer
                 <div class="card-body">
                    <div class="form-group">
                     <label>Question And Answer </label>
-                    
-                    {% for answer in answer %}
-                    <div class="row" >
+
+                    <ol type="1">
+                      <div class="row" >
                         <div class="container">
-                            {{answer.question_id.question}}
+                      {% for answer in answer %}
+                   
+                            <li> {{answer.question_id.question}}</li>
+                           
+                            <!-- {{answer.question_id.question}} -->
                             {{answer.answer|safe}}
+                            <br>  <br>
+                            
+                            {% endfor %}
+                           
                         </div>
+                   
+                       
                     </div>
+                  </ol>
                         
-                    {% endfor %}
+                  
                         
                    
                   </div>

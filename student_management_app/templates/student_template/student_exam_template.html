@@ -50,7 +50,7 @@ Exam
             <div class="form-group">
             
               {% if page_obj.has_next %}
-              <a href="?page={{ page_obj.next_page_number}}"><button type="button" class="btn btn-block bg-gradient-secondary">Next</button></a>
+              <a href="?page={{ page_obj.next_page_number}}"><button type="button" style="display: none;" class="btn btn-block bg-gradient-secondary" id="submitAnswer" >Next</button></a>
               {% else %}
               <a href="{% url 'exam_save_answer' %}"><button  style="display: none;" class="btn btn-success form-control" id="submitAnswer">submit Test</button></a>
            {% endif %}
@@ -83,8 +83,12 @@ Exam
         saveAnsButton.style.display='none'
 
         var ans=$("input:radio[name=option]:checked").val()
+        if(!ans)
+        {
+          ans="vfgfbvdgh"
+        }
         console.log(ans);
-        
+        submit_button.style.display='block'
         
  
         $.ajax({
@@ -92,7 +96,7 @@ Exam
             type: "GET",
             data:{'ans':ans},
         })
-        submit_button.style.display='block'
+       
     }
 </script>
 

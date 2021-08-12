@@ -70,21 +70,24 @@ def save_attendance_data(request):
 
 
 def staff_update_attendance(request):
-    subjects=Subjects.objects.filter(staff_id=request.user.id)
-    session_year_id=SessionYearModel.objects.all()
-    return render(request,"staff_template/staff_update_attendance.html",{"subjects":subjects,"session_year_id":session_year_id})
+    admin = Staffs.objects.get(admin = request.user.id)
+    semester = Semester.objects.filter(course = admin.course_id.id)
+    context={
+        "semester":semester,
+    }
+    return render(request,"staff_template/staff_update_attendance.html",context)
 
 
 @csrf_exempt
 def get_attendance_dates(request):
     subject=request.POST.get("subject")
-    session_year_id=request.POST.get("session_year_id")
+    semester = request.POST.get("semester")
     subject_obj=Subjects.objects.get(id=subject)
-    session_year_obj=SessionYearModel.objects.get(id=session_year_id)
-    attendance=Attendance.objects.filter(subject_id=subject_obj,session_year_id=session_year_obj)
+    semester=Semester.objects.get(id=semester)
+    attendance=Attendance.objects.filter(subject_id=subject_obj,semester_id=semester)
     attendance_obj=[]
     for attendance_single in attendance:
-        data={"id":attendance_single.id,"attendance_date":str(attendance_single.attendance_date),"session_year_id":attendance_single.session_year_id.id}
+        data={"id":attendance_single.id,"attendance_date":str(attendance_single.attendance_date),"semester_id":attendance_single.semester_id.id}
         attendance_obj.append(data)
 
     return JsonResponse(json.dumps(attendance_obj),safe=False)
@@ -204,9 +207,6 @@ def add_assigenment_save(request):
         except:
             messages.error(request,"Failed To Added Questions")
             return HttpResponseRedirect("/add_assignments")
-
-def assigement_answer(request):
-    pass
 
 def add_question(request):
     admin = Staffs.objects.get(admin = request.user.id)

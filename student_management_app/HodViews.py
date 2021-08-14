@@ -150,10 +150,22 @@ def manage_courses(request):
     courses = Courses.objects.all()
     return render(request,"hod_template/manage_course_template.html",{"courses":courses})
 
-def manage_subjects(request):
-    admin_id = AdminHOD.objects.get(admin=request.user.id)
+def semester_subject(request):
+    admin_id = AdminHOD.objects.get(admin = request.user.id)
     courses=Courses.objects.get(id=admin_id.course_id.id)
-    subjects = Subjects.objects.filter(course_id=courses)
+    semester = Semester.objects.filter(course_id=courses)
+    print(semester)
+    context = {
+        "semester":semester,
+    }
+    return render(request,"hod_template/subject_semester.html",context)
+
+def manage_subjects(request,pk):
+    admin_id = AdminHOD.objects.get(admin=request.user.id)
+    # courses=Courses.objects.get(id=admin_id.course_id.id)
+    semester = Semester.objects.get(id=pk)
+    print(semester)
+    subjects = Subjects.objects.filter(semester_id=semester)
     return render(request,"hod_template/manage_subject_template.html",{"subjects":subjects})
 
 def edit_staff(request,staff_id):
@@ -233,11 +245,15 @@ def edit_subject_save(request):
         subject_id = request.POST.get("subject_id")
         subject_name = request.POST.get("subject_name")
         staff_id = request.POST.get("staff")
+        semester_id = request.POST.get("semester")
         try:
             subject=Subjects.objects.get(id=subject_id)
             subject.subject_name=subject_name
             staff=CustomUser.objects.get(id=staff_id)
             subject.staff_id= staff
+            semester = Semester.objects.get(id=semester_id) 
+            print(semester)
+            subject.semester_id = semester
             subject.save()
             messages.success(request,"Successfully Edited Subject")
             return HttpResponseRedirect("/edit_subject/" +subject_id)
@@ -268,10 +284,8 @@ def edit_student_save(request):
         last_name= request.POST.get("last_name")
         username = request.POST.get("username")
         email = request.POST.get("email")
-        
         address = request.POST.get("address")
         semester_id=request.POST.get("semester_id")
-        
         sex = request.POST.get("sex")
         try:
             user = CustomUser.objects.get(id=student_id)

@@ -58,7 +58,7 @@ urlpatterns = [
     path('manage_staff', HodViews.manage_staff),
     path('manage_students',HodViews.manage_students),
     # path('manage_courses',HodViews.manage_courses),
-    path('manage_subjects',HodViews.manage_subjects),
+    path('manage_subjects/<int:pk>',HodViews.manage_subjects,name="manage_subjects"),
     path('edit_staff/<str:staff_id>',HodViews.edit_staff),
     path('edit_staff_save',HodViews.edit_staff_save),
     # path('edit_course/<str:course_id>',HodViews.edit_course),
@@ -85,6 +85,7 @@ urlpatterns = [
     path('admin_send_notification_student', HodViews.admin_send_notification_student,name="admin_send_notification_student"),
     path('send_student_notification', HodViews.send_student_notification,name="send_student_notification"),
     path('send_staff_notification', HodViews.send_staff_notification,name="send_staff_notification"),
+    path('semester_subject',HodViews.semester_subject,name="semester_subject"),
 
     # staff url
     path('staff_home',StaffViews.staff_home,name="staff_home"),
@@ -112,6 +113,8 @@ urlpatterns = [
     path('get_students_assignment',StaffViews.get_students_assignment,name="get_students_assignment"),
     path('assignment_subejct/<int:id><int:pk>/',StaffViews.assignment_subejct,name="assignment_subejct"),
     path('staff_assignment_answer/<int:id><int:pk>/',StaffViews.staff_assignment_answer,name="staff_assignment_answer"),
+    # path('start_live_classroom',StaffViews.start_live_classroom, name="start_live_classroom"),
+    # path('start_live_classroom_process',StaffViews.start_live_classroom_process, name="start_live_classroom_process"),
 
     #student url
     path('student_home',StudentViews.student_home,name="student_home"),
@@ -135,6 +138,8 @@ urlpatterns = [
     path('assignment_subject_listing',StudentViews.assignment_subject_listing,name="assignment_subject_listing"),
     path('attendence_view',StudentViews.attendence_view,name="attendence_view"),
     path('student_view_attendance_post',StudentViews.student_view_attendance_post,name="student_view_attendance_post"),
+    # path('join_class_room/<int:subject_id>/<int:session_year_id>',StudentViews.join_class_room,name="join_class_room"),
+    # path('node_modules/canvas-designer/widget.html',StaffViews.returnHtmlWidget,name="returnHtmlWidget"),
     path('froala_editor/',include('froala_editor.urls')),
 
 

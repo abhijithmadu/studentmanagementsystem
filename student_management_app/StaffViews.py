@@ -1,4 +1,5 @@
-from student_management_app.models import Assignment, AssignmentAnswer, Courses, CustomUser, NotificationStaffs, Question, Semester
+from django.db.models.fields import DateTimeField
+from student_management_app.models import Assignment, AssignmentAnswer, Courses, CustomUser, NotificationStaffs, OnlineClassRoom, Question, Semester
 from student_management_app.models import FeedBackStaffs
 from django.contrib import messages
 from student_management_app.models import Staffs
@@ -221,9 +222,13 @@ def add_question(request):
 
 def fetch_subject(request):
     if request.method == 'GET':
+        user = CustomUser.objects.get(id = request.user.id)
+        staff = Staffs.objects.get(admin = user)
+        print(staff)
         semester = request.GET['semester']
         semester = Semester.objects.get(id=semester)
-        subject = Subjects.objects.filter(semester_id = semester)
+        print(semester)
+        subject = Subjects.objects.filter(semester_id = semester,staff_id=staff.admin.id)
         print(subject,"subject")
         sub = subject.values()
     return JsonResponse(list(sub),safe=False)
@@ -282,10 +287,9 @@ def staff_profile_save(request):
             customuser=CustomUser.objects.get(id=request.user.id)
             customuser.first_name=first_name
             customuser.last_name=last_name
-            if password!=None and password!="":
-                customuser.set_password(password)
-            customuser.save()
-
+            # if password!=None and password!="":
+            #     customuser.set_password(password)
+            customuser.save()  
             staff=Staffs.objects.get(admin=customuser.id)
             staff.address=address
             staff.save()
@@ -379,6 +383,33 @@ def staff_assignment_answer(request,id,pk):
         "answer":assign_ans, 
     }
     return render(request,"staff_template/assignement_answer.html",context)
+
+
+# def start_live_classroom(request):
+#     subjects=Subjects.objects.filter(staff_id=request.user.id)
+#     session_years=SessionYearModel.object.all()
+#     return render(request,"staff_template/start_live_classroom.html",{"subjects":subjects,"session_years":session_years})
+
+# def start_live_classroom_process(request):
+#     session_year=request.POST.get("session_year")
+#     subject=request.POST.get("subject")
+
+#     subject_obj=Subjects.objects.get(id=subject)
+#     session_obj=SessionYearModel.object.get(id=session_year)
+#     checks=OnlineClassRoom.objects.filter(subject=subject_obj,session_years=session_obj,is_active=True).exists()
+#     if checks:
+#         data=OnlineClassRoom.objects.get(subject=subject_obj,session_years=session_obj,is_active=True)
+#         room_pwd=data.room_pwd
+#         roomname=data.room_name
+#     else:
+#         room_pwd=DateTimeField.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
+#         roomname=DateTimeField.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
+#         staff_obj=Staffs.objects.get(admin=request.user.id)
+#         onlineClass=OnlineClassRoom(room_name=roomname,room_pwd=room_pwd,subject=subject_obj,session_years=session_obj,started_by=staff_obj,is_active=True)
+#         onlineClass.save()
+
+#     return render(request,"staff_template/live_class_room_start.html",{"username":request.user.username,"password":room_pwd,"roomid":roomname,"subject":subject_obj.subject_name,"session_year":session_obj})
+
    
 
 

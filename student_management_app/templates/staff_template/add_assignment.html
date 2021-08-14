@@ -21,6 +21,7 @@ Add Assignment
                   <div class="form-group">
                     <label>Semester</label>
                     <select  class="form-control" id="semester" name="semester_id">
+                      <option value="">--Select a semester--</option>
                         
                         {% for semester in semester %}
                         <option value="{{semester.id}} ">{{semester.semester_name}}</option>

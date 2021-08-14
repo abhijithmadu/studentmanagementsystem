@@ -205,8 +205,11 @@ def exam_save_answer(request):
     return render(request,"student_template/congragulation.html",context)
 
 def student_profile(request):
+    print(request.user.id,"hai kelllo")
     user = CustomUser.objects.get(id=request.user.id)
     student = Students.objects.get(admin = user)
+    print("hhdjksahdkjhALKSHDkajdhkAJH")
+    # return HttpResponse("hai hello")
     return render(request,"student_template/student_profile.html",{"user":user,"student":student})
 
 def student_profile_save(request):
@@ -217,22 +220,22 @@ def student_profile_save(request):
         last_name = request.POST.get("last_name")
         address = request.POST.get("address")
         password = request.POST.get("password")
-        try:
-            customuser = CustomUser.objects.get(id = request.user.id)
-            customuser.first_name = first_name
-            customuser.last_name = last_name
-            if password!=None and password!="":
-                customuser.set_password(password)
-            customuser.save()
+        # try:
+        customuser = CustomUser.objects.get(id = request.user.id)
+        customuser.first_name = first_name
+        customuser.last_name = last_name
+        # if password!=None and password!="":
+        #     customuser.set_password(password)
+        customuser.save()
 
-            student = Students.objects.get(admin=customuser.id)
-            student.address = address
-            student.save()
-            messages.success(request,"Successfully Update Profile")
-            return HttpResponseRedirect("/student_profile")
-        except:
-            messages.error(request,"Failed To Update Profile")
-            return HttpResponseRedirect("/student_profile")
+        student = Students.objects.get(admin=customuser.id)
+        student.address = address
+        student.save()
+        messages.success(request,"Successfully Update Profile")
+        return redirect("student_profile")
+        # except:
+        #     messages.error(request,"Failed To Update Profile")
+        #     return HttpResponseRedirect("/student_profile")
 @csrf_exempt
 def student_fcmtoken_save(request):
     token=request.POST.get("token")
@@ -307,6 +310,7 @@ def assignment_answer(request,pk):
             messages.error(request,"Successfully Add Answer")
             return HttpResponseRedirect("/assignment_subject_listing")
     
+
 
 
 

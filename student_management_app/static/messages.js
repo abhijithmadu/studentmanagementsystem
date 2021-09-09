@@ -37,7 +37,7 @@ let send_message_form = $('#send-message-form')
 const USER_ID = $('#logged-in-user').val()
 let propic="{{login_pro.logo.url}}"
 
-let loc = window.location
+// let loc = window.location
 // let wsStart 
 
 // if(loc.protocol === 'https') {
@@ -81,7 +81,7 @@ socket.onmessage = async function(e){
 }
 
 socket.onerror = async function(e){
-    console.log(endpoint);
+
     console.log('error', e)
 }
 

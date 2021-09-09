@@ -13,6 +13,11 @@ Exam
               <div class="card-header">
                 <h3 class="card-title">Exam</h3>
               </div>
+              <div style="float:right">
+                <h4 class="" style="text-align: center;">
+                  <span id="timer" style="border: 1px solid rgb(161, 134, 134);padding:10px 20px">Time left</span>
+                </h4>
+              </div>
               <!-- /.card-header -->
               <!-- form start -->
 
@@ -98,6 +103,29 @@ Exam
         })
        
     }
+    
+</script>
+<script>
+  var time = 20;
+  var testDis=setInterval(function() {
+    if(time > 0) {
+   
+      time--;
+      console.log(time)
+      var left=document.getElementById("timer")
+      left.innerHTML="TIME LEFT "+time
+    } else {
+        alert("Your Time is Up")
+        $("#save_ans").trigger('click');
+        $("#submitAnswer").trigger('click');
+
+
+      
+        clearInterval(testDis)
+
+    }
+
+  },1000)
 </script>
 
 {% endblock custom_js %}

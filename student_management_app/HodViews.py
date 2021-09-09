@@ -1,10 +1,11 @@
+from django.core.files.storage import FileSystemStorage
 import requests
 from django.conf.urls.static import static
-from django.contrib import admin, messages
+from django.contrib import messages
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from .models import AdminHOD, Courses, CustomUser, FeedBackStaffs, FeedBackStudent, LeaveReportStaff, LeaveReportStudent, NotificationStaffs, NotificationStudent, Semester, SessionYearModel, Staffs, Students, Subjects
+from .models import AdminHOD, Courses, CustomUser, FeedBackStaffs, FeedBackStudent, LeaveReportStaff, LeaveReportStudent, NotificationStaffs, NotificationStudent, Semester, Staffs, Students, Subjects, Thread
 import json
 def admin_home(request):
     return render(request,"hod_template/home_content.html")
@@ -37,6 +38,19 @@ def add_staff_save(request):
             user.staffs.address= address
             user.staffs.course_id = courses
             user.save()
+            student = Students.objects.filter(course_id=courses.id)
+            print(student)
+            for stu in student:
+
+                # try:
+                #     Thread.objects.filter(first_person=stf.admin,second_person=user).exists()
+                #     print("exist",user,stf.admin)
+                #     pass
+
+                # except:
+                print("dont exist")
+                thread = Thread(first_person=user,second_person=stu.admin)
+                thread.save()
             messages.success(request,"Successfully Added Staff")
             return HttpResponseRedirect("/add_staff")
         except:
@@ -82,6 +96,10 @@ def add_students_save(request):
         address = request.POST.get("address")
         semester_id=request.POST.get("semester_id")
         sex = request.POST.get("sex")
+        profile_pic = request.FILES['profile_pic']
+        fs=FileSystemStorage()
+        filename = fs.save(profile_pic.name,profile_pic)
+        profile_pic_url=fs.url(filename)
         try:
             user = CustomUser.objects.create_user(username = username,first_name=first_name,last_name=last_name,email=email,password=password,user_type=3)
             user.students.address= address
@@ -91,8 +109,22 @@ def add_students_save(request):
             user.students.gender= sex
             user.students.course_id = courses
             user.students.semester_id = semester
-            user.students.profile_pic = ""
+            user.students.profile_pic = profile_pic_url
             user.save()
+            staff = Staffs.objects.filter(course_id=courses.id)
+            print(staff)
+            for stf in staff:
+
+                # try:
+                #     Thread.objects.filter(first_person=stf.admin,second_person=user).exists()
+                #     print("exist",user,stf.admin)
+                #     pass
+
+                # except:
+                print("dont exist")
+                thread = Thread(first_person=stf.admin,second_person=user)
+                thread.save()
+
             messages.success(request,"Successfully Added Student")
             return HttpResponseRedirect("/add_students")
         except:
@@ -139,12 +171,24 @@ def manage_staff(request):
     staffs = Staffs.objects.filter(course_id=courses)
     return render(request,"hod_template/manage_staff_template.html",{"staffs":staffs})
 
-def manage_students(request):
+def semester_student(request):
+    admin_id = AdminHOD.objects.get(admin = request.user.id)
+    courses=Courses.objects.get(id=admin_id.course_id.id)
+    semester = Semester.objects.filter(course_id=courses)
+    print(semester)
+    context = {
+        "semester":semester,
+    }
+    return render(request,"hod_template/student_semester.html",context)
+    
+
+def manage_students(request,pk):
     admin_id = AdminHOD.objects.get(admin=request.user.id)
     print(admin_id)
     courses=Courses.objects.get(id=admin_id.course_id.id)
-    students = Students.objects.filter(course_id=courses)
-    return render(request,"hod_template/manage_student_template.html",{"students":students})
+    semester = Semester.objects.get(id=pk)
+    students = Students.objects.filter(semester_id=semester).order_by("admin__first_name")
+    return render(request,"hod_template/manage_student_template.html",{"students":students,"semester":semester})
 
 def manage_courses(request):
     courses = Courses.objects.all()
@@ -287,6 +331,13 @@ def edit_student_save(request):
         address = request.POST.get("address")
         semester_id=request.POST.get("semester_id")
         sex = request.POST.get("sex")
+        if request.FILES.get('profile_pic',False):
+            profile_pic = request.FILES['profile_pic']
+            fs=FileSystemStorage()
+            filename = fs.save(profile_pic.name,profile_pic)
+            profile_pic_url=fs.url(filename)
+        else:
+            profile_pic_url = None
         try:
             user = CustomUser.objects.get(id=student_id)
             user.first_name= first_name
@@ -299,6 +350,9 @@ def edit_student_save(request):
             semester= Semester.objects.get(id=semester_id)
             student_model.semester_id=semester
             student_model.gender=sex
+            if profile_pic_url != None:
+                student_model.profile_pic=profile_pic_url
+            
             student_model.save()
             messages.success(request,"Successfully Edited Student")
             return HttpResponseRedirect("/edit_student/" +student_id)
@@ -450,7 +504,7 @@ def send_student_notification(request):
         },
         "to":token
     }
-    headers={"Content-Type":"application/json","Authorization":"key=AAAAUyVC3ik:APA91bEv7dCa_E9pAWtppa-eDVAnDZZvddVJG4lUsHBmrg4rJpLlbUyC88NYKO9qJmADR1xkAqwHxh-lfM1hTka6Z8BDs9L--WpOXRqPwPqfpjhT5tGBbWqEtOJ8arxIh53V5HLihaAd"}
+    headers={"Content-Type":"application/json","Authorization":"key=AAAAqraGbVo:APA91bGLUsHV1pG7RA-wYDFX-G5FZPmuvAxHCyKPiAs-vGYoXBMLYeLq7Bra1YcibpgR_8SchtRCPt65kmwHd_nC_cng-UUGNI3oUC2Xo0xzfbwASE8YyHQ2GKAQpzL6ypVkw63N-rBd"}
     data=requests.post(url,data=json.dumps(body),headers=headers)
     notification=NotificationStudent(student_id=student,message=message)
     notification.save()
@@ -468,17 +522,62 @@ def send_staff_notification(request):
         "notification":{
             "title":"Student Management System",
             "body":message,
-            "click_action":"",
-            "icon":""
         },
         "to":token
     }
-    headers={"Content-Type":"application/json","Authorization":"key=AAAAUyVC3ik:APA91bEv7dCa_E9pAWtppa-eDVAnDZZvddVJG4lUsHBmrg4rJpLlbUyC88NYKO9qJmADR1xkAqwHxh-lfM1hTka6Z8BDs9L--WpOXRqPwPqfpjhT5tGBbWqEtOJ8arxIh53V5HLihaAd"}
+    headers={"Content-Type":"application/json","Authorization":"key=AAAAqraGbVo:APA91bGLUsHV1pG7RA-wYDFX-G5FZPmuvAxHCyKPiAs-vGYoXBMLYeLq7Bra1YcibpgR_8SchtRCPt65kmwHd_nC_cng-UUGNI3oUC2Xo0xzfbwASE8YyHQ2GKAQpzL6ypVkw63N-rBd"}
     data=requests.post(url,data=json.dumps(body),headers=headers)
     notification=NotificationStaffs(staff_id=staff,message=message)
     notification.save()
     print(data.text)
     return HttpResponse("True")
+
+@csrf_exempt
+def check_email_exist(request):
+    email=request.POST.get("email")
+    user_obj = CustomUser.objects.filter(email=email).exists()
+    if user_obj:
+        return HttpResponse(True)
+    else:
+        return HttpResponse(False)
+
+@csrf_exempt
+def check_username_exist(request):
+    username=request.POST.get("username")
+    user_obj = CustomUser.objects.filter(username=username).exists()
+    if user_obj:
+        return HttpResponse(True)
+    else:
+        return HttpResponse(False)
+
+@csrf_exempt
+def check_subject_exist(request):
+    subject=request.POST.get("subject") 
+    sub_obj = Subjects.objects.filter(subject_name=subject).exists()
+    print(sub_obj,"check_subject_exist")
+    # if sub_obj:
+    #     return HttpResponse(True)
+    # else:
+    return HttpResponse(sub_obj)
+
+
+def time_table(request):
+    admin = AdminHOD.objects.get(admin = request.user.id)
+    course = Courses.objects.get(id=admin.course_id.id)
+    semester = Semester.objects.filter(course_id=course)
+    print(semester)
+    
+    subject =Subjects.objects.filter(semester_id=1)
+    print(subject,"subject")
+    Monday = [subject[0].subject_name,subject[1].subject_name]
+    Tuesday = [subject[1].subject_name,subject[0].subject_name]
+    Wednesday = [subject[1].subject_name,subject[0].subject_name]
+    Thursday = [subject[1].subject_name,subject[0].subject_name]
+    Friday = [subject[1].subject_name,subject[0].subject_name]
+    Saturday = [subject[1].subject_name,subject[0].subject_name]
+    print(Monday,Tuesday,Wednesday,Thursday,Friday,Saturday)
+
+    return render(request,"hod_template/timetable.html")
 
 
 

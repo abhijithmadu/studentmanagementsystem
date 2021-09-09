@@ -126,10 +126,20 @@ Take Attendance
                 var json_data=JSON.parse(response);
                 console.log(json_data)
                 var div_data=`<div class='form-group'><label>Attendance Date : </label><input type='date' name='attendance_date' id='attendance_date' readonly value="${ new Date().toISOString().split("T")[0]}" class='form-control'></div><div class='form-group'><div class='row'>`;
+
+                div_data+=`<div><select id ='period'>
+                  <option value="period1">period1</option>
+                  <option value="period2">period2</option>
+                  <option value="period3">period3</option>
+                  <option value="period4">period4</option>
+                  <option value="period5">period5</option>
+                  </select>
+                  </div>`
                 for(key in json_data)
                 {
                     div_data+="<div class='col-lg-2'><div class='form-check'><input type='checkbox' checked='checked' name='student_data[]' value='"+json_data[key]['id']+"'><label class='form-check-label'>"+json_data[key]['name']+"</label></div></div>";
                 }
+   
                 div_data+="</div></div>";
                 div_data+="<div class='form-group'>";
                 div_data+="<button id='save_attendance' class='btn btn-success btn-block' type='button'>Save Attendance Data</button>";
@@ -144,6 +154,8 @@ Take Attendance
 
 
             $(document).on("click","#save_attendance",function(){
+              var period=document.getElementById("period").value
+         
 
                 $(this).attr("disabled","disabled")
                 $(this).text("Saving Attendance Data...")
@@ -165,7 +177,7 @@ Take Attendance
                 $.ajax({
                         url:"{% url 'save_attendance_data' %}",
                         type:'POST',
-                        data:{student_ids:student_data,attendance_date:attendance_date,subject_id:subject_id,semester:semester},
+                        data:{student_ids:student_data,attendance_date:attendance_date,subject_id:subject_id,semester:semester,period:period},
                     })
                     .done(function(response){
 

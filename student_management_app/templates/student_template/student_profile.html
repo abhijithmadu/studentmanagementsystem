@@ -24,6 +24,14 @@ Edit Profile
                     <input type="text" class="form-control" name="username" value="{{ user.username }}" disabled="disabled">
                   </div>
                   <div class="form-group">
+                    <label>Course</label>
+                    <input type="text" class="form-control" name="username" value="{{ student.course_id.course_name }}" disabled="disabled">
+                  </div>
+                  <div class="form-group">
+                    <label>Semester</label>
+                    <input type="text" class="form-control" name="username" value="{{ student.semester_id.semester_name }}" disabled="disabled">
+                  </div>
+                  <div class="form-group">
                     <label>Email</label>
                     <input type="text" class="form-control" name="username" value="{{ user.email }}" disabled="disabled">
                   </div>

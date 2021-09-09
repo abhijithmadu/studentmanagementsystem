@@ -16,12 +16,12 @@ Add Student
               </div>
               <!-- /.card-header -->
               <!-- form start -->
-              <form role="form" action="/add_students_save" method="post">
+              <form role="form" action="/add_students_save" method="post" enctype="multipart/form-data">
                   {% csrf_token %}
                 <div class="card-body">
                   <div class="form-group">
                     <label>Email address</label>
-                    <input type="email" class="form-control" name="email" placeholder="Enter email" >
+                    <input type="email" class="form-control" name="email" placeholder="Enter email" id="id_email">
                   </div>
                   <div class="form-group">
                     <label>Password</label>
@@ -37,7 +37,7 @@ Add Student
                   </div>
                    <div class="form-group">
                     <label>Username</label>
-                    <input type="text" class="form-control" placeholder="Username" name="username">
+                    <input type="text" class="form-control" placeholder="Username" name="username" id="uname">
                   </div>
                   <div class="form-group">
                     <label>Address</label>
@@ -73,6 +73,12 @@ Add Student
                             
                     </select>
                 </div>
+                <div class="form-group">
+                  <label>Profile Image</label>
+                  <input type="file" class="form-control" placeholder="" name="profile_pic">
+
+                </div>
+
                       <div class="form-group">
                       {% if messages %}
                         {% for message in messages %}
@@ -104,4 +110,82 @@ Add Student
     </section>
     <!-- /.content -->
 {% endblock main_content %}
+
+{% block custom_js %}
+<script>
+  $(document).ready(function(){
+    $("#id_email").keyup(function(){
+      console.log($(this).val());
+      var email = $(this).val();
+      if(email!=""){
+      $.ajax({
+        url:"{% url 'check_email_exist' %}",
+        type:'POST',
+        data:{email:email}
+
+      })
+      .done(function(response){
+        console.log(response)
+        if(response=="True"){
+          $(".email_error").remove();
+          $("<span class='email_error' style='padding:5px;color:red;font-weight:bold;'>Email Not Available</span>").insertAfter("#id_email")
+
+        }
+        else{
+          $(".email_error").remove();
+          $("<span class='email_error' style='padding:5px;color:green;font-weight:bold;'>Email Available</span>").insertAfter("#id_email")
+        }
+
+     
+      })
+      .fail(function(){
+
+      })
+    }
+    else{
+      $(".email_error").remove();
+    }
+
+    });
+    $("#uname").keyup(function(){
+      console.log($(this).val());
+      var username = $(this).val();
+      if(username!=""){
+
+      $.ajax({
+        url:"{% url 'check_username_exist' %}",
+        type:'POST',
+        data:{username:username}
+
+      })
+      .done(function(response){
+        console.log(response)
+        if(response=="True"){
+          $(".username_error").remove();
+          $("<span class='username_error' style='padding:5px;color:red;font-weight:bold;'>Username Not Available</span>").insertAfter("#uname")
+
+        }
+        else{
+          $(".username_error").remove();
+          $("<span class='username_error' style='padding:5px;color:green;font-weight:bold;'>Username Available</span>").insertAfter("#uname")
+        }
+
+     
+      })
+      .fail(function(){
+
+      })
+
+      }
+      else{
+        $(".username_error").remove();
+      }
+        
+
+    });
+
+  })
+</script>
+
+{% endblock custom_js %}
 

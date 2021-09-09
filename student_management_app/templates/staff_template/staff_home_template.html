@@ -136,18 +136,130 @@ Home
 
 {% block custom_js %}
 
-<script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-messaging.js"></script>
+<script>
+  $(document).ready(function(){
+         var pieData  = {
+            labels: [
+                'Attendance',
+                'Leave'
+            ],
+            datasets: [
+              {
+                data: [{{ attendance_count }},{{ leave_count }}],
+                backgroundColor : ['#f56954', '#00a65a'],
+              }
+            ]
+          }
+          var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+          var pieOptions     = {
+            maintainAspectRatio : false,
+            responsive : true,
+          }
+          //Create pie or douhnut chart
+          // You can switch between pie and douhnut using the method below.
+          var pieChart = new Chart(pieChartCanvas, {
+            type: 'pie',
+            data: pieData,
+            options: pieOptions
+          });
+
+
+              var attendance_list={{ attendance_list }};
+              var subject_list={{ subject_list|safe }};
+              var barChartData = {
+                labels  : subject_list,
+                datasets: [
+                  {
+                    label               : 'Attend Subject Chart',
+                    backgroundColor     : 'rgba(60,141,188,0.9)',
+                    borderColor         : 'rgba(60,141,188,0.8)',
+                    pointRadius          : false,
+                    pointColor          : '#3b8bba',
+                    pointStrokeColor    : 'rgba(60,141,188,1)',
+                    pointHighlightFill  : '#fff',
+                    pointHighlightStroke: 'rgba(60,141,188,1)',
+                    data                : attendance_list
+                  }
+                ]
+              }
+              var barChartCanvas = $('#barChart').get(0).getContext('2d')
+              var temp0 = barChartData.datasets[0]
+              barChartData.datasets[0] = temp0
+
+              var barChartOptions = {
+                responsive              : true,
+                maintainAspectRatio     : false,
+                datasetFill             : false
+              }
+
+              var barChart = new Chart(barChartCanvas, {
+                type: 'bar',
+                data: barChartData,
+                options: barChartOptions
+              })
+
+
+              var student_list={{ student_list|safe }};
+              var present_list={{ present_list }};
+              var absent_list={{ absent_list }};
+               var barChartData2 = {
+                labels  : student_list,
+                datasets: [
+                  {
+                    label               : 'Student Attendance Chart For Present',
+                    backgroundColor     : 'rgba(60,141,188,0.9)',
+                    borderColor         : 'rgba(60,141,188,0.8)',
+                    pointRadius          : false,
+                    pointColor          : '#3b8bba',
+                    pointStrokeColor    : 'rgba(60,141,188,1)',
+                    pointHighlightFill  : '#fff',
+                    pointHighlightStroke: 'rgba(60,141,188,1)',
+                    data                : present_list
+                  },
+                  {
+                    label               : 'Student Attendance Chart for Absent',
+                    backgroundColor     : 'rgba(200,141,188,0.9)',
+                    borderColor         : 'rgba(200,141,188,0.8)',
+                    pointRadius          : false,
+                    pointColor          : '#3b8bba',
+                    pointStrokeColor    : 'rgba(60,141,188,1)',
+                    pointHighlightFill  : '#fff',
+                    pointHighlightStroke: 'rgba(60,141,188,1)',
+                    data                : absent_list
+                  }
+                ]
+              }
+              var barChartCanvas2 = $('#barChart2').get(0).getContext('2d')
+              var temp2 = barChartData2.datasets[0]
+              barChartData2.datasets[0] = temp2
+
+              var barChartOptions2 = {
+                responsive              : true,
+                maintainAspectRatio     : false,
+                datasetFill             : false
+              }
+
+              var barChart2 = new Chart(barChartCanvas2, {
+                type: 'bar',
+                data: barChartData2,
+                options: barChartOptions2
+              })
+
+  });
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
 <script>
 
 var firebaseConfig = {
-    apiKey: "AIzaSyBnrjKzEc33BZE_sKA8KrEv336i7sI5k7o",
-    authDomain: "studentmanagementsystem-2fdee.firebaseapp.com",
-    projectId: "studentmanagementsystem-2fdee",
-    storageBucket: "studentmanagementsystem-2fdee.appspot.com",
-    messagingSenderId: "357107424809",
-    appId: "1:357107424809:web:b80271c2deb98080598638",
-    measurementId: "G-PZR89HF1TQ"
+    apiKey: "AIzaSyCJ8KrGXMqXpcIqB0B1LSR4_XxPBIqh8Sw",
+    authDomain: "studentmanagementsystem-6a09b.firebaseapp.com",
+    projectId: "studentmanagementsystem-6a09b",
+    storageBucket: "studentmanagementsystem-6a09b.appspot.com",
+    messagingSenderId: "733206703450",
+    appId: "1:733206703450:web:e0cfb5ba5ba4b6a7fe9763",
+    measurementId: "G-JJ41EM0XK5"
   };
     firebase.initializeApp(firebaseConfig);
     const messaging=firebase.messaging();

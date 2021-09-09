@@ -26,7 +26,8 @@
                with font-awesome or any other icon font library -->
             
           <li class="nav-item">
-            <a href="/add_staff" class="nav-link">
+            {% url 'add_staff' as add_staff %}
+            <a href="{{ add_staff }}" class="nav-link {% if request.path == add_staff %} active {% endif %}">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Add Staff
@@ -35,7 +36,8 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="/manage_staff" class="nav-link">
+            {% url 'manage_staff' as manage_staff %}
+            <a href="{{manage_staff}}" class="nav-link {% if request.path == manage_staff %} active {% endif %}">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Manage Staff
@@ -44,7 +46,8 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="/add_students" class="nav-link">
+            {% url 'add_students' as add_students %}
+            <a href="{{add_students}}" class="nav-link  {% if request.path == add_students %} active {% endif %}">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Add Students
@@ -53,7 +56,8 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="/manage_students" class="nav-link">
+            {% url 'semester_student' as semester_student %}
+            <a href="{{semester_student}}" class="nav-link {% if request.path == semester_student %} active {% endif %}">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Manage Students
@@ -63,7 +67,8 @@
           </li>
           
           <li class="nav-item">
-            <a href="/add_subject" class="nav-link">
+            {% url 'add_subject' as add_subject %}
+            <a href="{{add_subject}}" class="nav-link  {% if request.path == add_subject %} active {% endif %}">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Add Subjects
@@ -72,7 +77,8 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'semester_subject' %}" class="nav-link">
+            {% url 'semester_subject' as semester_subject %}
+            <a href="{{semester_subject}}" class="nav-link  {% if request.path == semester_subject %} active {% endif %}">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Manage Subjects
@@ -81,7 +87,8 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="/manage_semester" class="nav-link">
+            {% url 'manage_semester' as manage_semester %}
+            <a href="{{manage_semester}}" class="nav-link  {% if request.path == manage_semester %} active {% endif %}">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Manage Semester
@@ -91,7 +98,8 @@
           </li>
         
           <li class="nav-item">
-            <a href="/student_feedback_message" class="nav-link">
+            {% url 'student_feedback_message' as student_feedback_message %}
+            <a href="{{student_feedback_message}}" class="nav-link  {% if request.path == student_feedback_message %} active {% endif %}">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Student Feedback Message
@@ -100,7 +108,8 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="/staff_feedback_message" class="nav-link">
+            {% url 'staff_feedback_message' as staff_feedback_message %}
+            <a href="{{staff_feedback_message}}" class="nav-link  {% if request.path == staff_feedback_message %} active {% endif %}">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Staff Feedback Message
@@ -109,7 +118,8 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="/student_leave_view" class="nav-link">
+            {% url 'student_leave_view' as student_leave_view %}
+            <a href="{{student_leave_view}}" class="nav-link  {% if request.path == student_leave_view %} active {% endif %}">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Student Leave Report 
@@ -118,7 +128,8 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="/staff_leave_view" class="nav-link">
+            {% url 'staff_leave_view' as staff_leave_view %}
+            <a href="{{staff_leave_view}}" class="nav-link  {% if request.path == staff_leave_view %} active {% endif %}">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Staff Leave Report 
@@ -127,7 +138,8 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'admin_send_notification_staff'%}" class="nav-link">
+            {% url 'admin_send_notification_staff' as admin_send_notification_staff %}
+            <a href="{{admin_send_notification_staff}}" class="nav-link  {% if request.path == admin_send_notification_staff %} active {% endif %}">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Send Staff Notification
@@ -136,7 +148,8 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'admin_send_notification_student'%}" class="nav-link">
+            {% url 'admin_send_notification_student' as admin_send_notification_student %}
+            <a href="{{admin_send_notification_student}}" class="nav-link  {% if request.path == admin_send_notification_student %} active {% endif %}">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Send Sudent Notification

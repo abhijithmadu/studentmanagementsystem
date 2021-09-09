@@ -1,6 +1,6 @@
 from student_management_app.form import AssignementForm
 from django.views.decorators.csrf import csrf_exempt
-from student_management_app.models import Assignment, AssignmentAnswer, AttendanceReport, NotificationStudent, Question, Semester
+from student_management_app.models import Assignment, AssignmentAnswer, AttendanceReport, AttendanceSampl, NotificationStudent, OnlineClassRoom, Question, Semester, Staffs, StudentResult, Thread
 from student_management_app.models import Attendance, CustomUser
 from student_management_app.models import Courses, Subjects
 from student_management_app.models import FeedBackStudent
@@ -17,14 +17,74 @@ def student_home(request):
     attendence_present = AttendanceReport.objects.filter(student_id=student,status=True).count()
     attendence_absent = AttendanceReport.objects.filter(student_id=student,status=False).count()
     course = Courses.objects.get(id=student.course_id.id) 
-    subjects = Subjects.objects.filter(course_id=course).count()
+    semseter = Semester.objects.get(id=student.semester_id.id)
+    subjects = Subjects.objects.filter(semester_id=semseter).count()
+    subjects_data = Subjects.objects.filter(semester_id=semseter)
+    class_room=OnlineClassRoom.objects.filter(subject__in=subjects_data,is_active=True,semester_id=semseter)
+
+
+    # staff = Staffs.objects.filter(course_id=course.id)
+    # print(staff)
+    # for stf in staff:
+    #     try:
+    #         Thread.objects.filter(first_person=stf.admin,second_person=request.user).exists()
+    #         print("exist",request.user,stf.admin)
+    #         pass
+
+    #     except:
+    #         print("dont exist")
+    #         thread = Thread(first_person=stf.admin,second_person=request.user)
+    #         thread.save()
+
+    subject_name = []
+    data_present = []
+    data_absent = []
+    subject_data = Subjects.objects.filter(semester_id=student.semester_id)
+    for subject in subject_data:
+        attendence = Attendance.objects.filter(subject_id=subject.id)
+        attendence_present_count = AttendanceReport.objects.filter(attendance_id__in=attendence,status=True,student_id=student.id).count()
+        attendence_absent_count = AttendanceReport.objects.filter(attendance_id__in=attendence,status=False,student_id=student.id).count()
+        subject_name.append(subject.subject_name)
+        data_present.append(attendence_present_count)
+        data_absent.append(attendence_absent_count)
     context={
         "attendence_total":attendence_total,
         "attendence_present":attendence_present,
         "attendence_absent":attendence_absent,
         "subjects":subjects,
+        "data_name":subject_name,
+        "data1":data_present,
+        "data2":data_absent,
+        "class_room":class_room,
+        "student":student,
+
     }
     return render(request,"student_template/student_home_template.html",context)
+
+def join_class_room(request,subject_id,semester_id):
+    semester =Semester.objects.get(id=semester_id)
+    subjects=Subjects.objects.filter(id=subject_id)
+    if subjects.exists():
+        session=Semester.objects.filter(id=semester.id)
+        if session.exists():
+            subject_obj=Subjects.objects.get(id=subject_id)
+            course=Courses.objects.get(id=subject_obj.course_id.id)
+            check_course=Students.objects.filter(admin=request.user.id,course_id=course.id)
+            if check_course.exists():
+                session_check=Students.objects.filter(admin=request.user.id,semester_id=semester.id)
+                if session_check.exists():
+                    onlineclass=OnlineClassRoom.objects.get(semester_id=semester_id,subject=subject_id)
+                    return render(request,"student_template/join_class_room_start.html",{"username":request.user.username,"password":onlineclass.room_pwd,"roomid":onlineclass.room_name})
+
+                else:
+                    return HttpResponse("This Online Session is Not For You")
+            else:
+                return HttpResponse("This Subject is Not For You")
+        else:
+            return HttpResponse("Semester Not found")
+    else:
+        return HttpResponse("Subject Not Found")
+
 
 def student_apply_leave(request):
     student_id=Students.objects.get(admin=request.user.id)
@@ -123,18 +183,25 @@ def attendence_view(request):
 def student_view_attendance_post(request):
     date = request.POST.get("date")
     print(date)
-    data =datetime.datetime.strptime(date,"%Y-%m-%d").date()
-    print(data)
+    date_lst = []
+    date_lst = date.split("-")
+    print(date_lst)
+
+    # data =datetime.datetime.strptime(date,"%Y-%m-%d").date()
+    # print(data)
     student =Students.objects.get(admin=request.user.id)
     semester = Semester.objects.get(id = student.semester_id.id)
     # subject = Subjects.objects.filter(semester_id=semester.id)
     print(semester)
-    attendence = Attendance.objects.filter(attendance_date=data,semester_id=semester)
+    attendence = Attendance.objects.filter(attendance_date__month=date_lst[1],semester_id=semester)
     print(attendence)
     attendence_report = AttendanceReport.objects.filter(attendance_id__in=attendence,student_id=student)
     print(attendence_report)
+    attendence_sample = AttendanceSampl.objects.filter(attendance_date__month=date_lst[1],student_id=student)
+    print("sampleeeeeeeeeeeeeee",attendence_sample)
     context = {
         "attendence_report":attendence_report,
+        "attendence_sample":attendence_sample,
     }
     return render(request,"student_template/student_attendance_post.html",context)
 
@@ -155,9 +222,19 @@ def exam(request,id):
     semester = Semester.objects.get(id = student.semester_id.id)
     print(semester)
     subject = Subjects.objects.get(id = id)
+    
     print(subject,"usahkuhaSKDHSDKHSADKJHKASIDJJDJ")
-    question = Question.objects.filter(subject_id = subject)
-    print(question)
+    try:
+        question = Question.objects.filter(subject_id = subject)
+    except:
+        question = None
+    print(question,"hello")
+    if not question:
+        messages.error(request,"No Questions Available")
+        return redirect("exam_sub_listing")
+        
+    else:
+        print("illa")
    
     for ques in question:
         request.session['answer'+str(count)]=ques.answer
@@ -184,6 +261,7 @@ def exam(request,id):
     return render(request,"student_template/student_exam_template.html",context) 
 
 answer_list = []
+
 def saveanswer(request):
     if request.method == 'GET':
         option = request.GET['ans']
@@ -252,6 +330,8 @@ def student_all_notification(request):
     notifications=NotificationStudent.objects.filter(student_id=student.id)
     return render(request,"student_template/all_notification.html",{"notifications":notifications})
 
+
+
 def assignment_subject_listing(request):
     student = Students.objects.get(admin=request.user.id)
     semester = Semester.objects.get(id = student.semester_id.id) 
@@ -309,6 +389,43 @@ def assignment_answer(request,pk):
         except:
             messages.error(request,"Successfully Add Answer")
             return HttpResponseRedirect("/assignment_subject_listing")
+
+
+def student_view_result(request):
+    student = Students.objects.get(admin=request.user.id)
+    studentresult =StudentResult.objects.filter(student_id=student.id)
+    context={
+        "studentresult":studentresult,
+    }
+    return render(request,"student_template/student_result.html ",context)
+
+def time_table_student(request):
+    student = Students.objects.get(admin=request.user.id)
+    course = Courses.objects.get(id=student.course_id.id)
+    semester = Semester.objects.get(id=student.semester_id.id)
+    print(semester)
+    
+    subject =Subjects.objects.filter(semester_id=semester)
+    print(subject,"subject")
+    Monday = [subject[1].subject_name,subject[3].subject_name,subject[2].subject_name,subject[0].subject_name,subject[4].subject_name]
+    Tuesday = [subject[0].subject_name,subject[0].subject_name,subject[4].subject_name,subject[1].subject_name,subject[3].subject_name]
+    Wednesday = [subject[3].subject_name,subject[4].subject_name,subject[1].subject_name,subject[2].subject_name,subject[1].subject_name]
+    Thursday = [subject[2].subject_name,subject[0].subject_name,subject[1].subject_name,subject[3].subject_name,subject[2].subject_name]
+    Friday = [subject[4].subject_name,subject[3].subject_name,subject[2].subject_name,subject[4].subject_name,subject[4].subject_name]
+    Saturday = [subject[0].subject_name,subject[4].subject_name,subject[3].subject_name,subject[0].subject_name,subject[0].subject_name]
+    context={
+        "Monday":Monday,
+        "Tuesday":Tuesday,
+        "Wednesday":Wednesday,
+        "Thursday":Thursday,
+        "Friday":Friday,
+        "Saturday":Saturday,
+    }
+    print(Monday,Tuesday,Wednesday,Thursday,Friday,Saturday)
+
+    return render(request,"student_template/timetableviewstudent.html",context)
+
+
     
 
 

@@ -5,17 +5,11 @@ from django.db.models.deletion import CASCADE
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from froala_editor.fields import FroalaField
-
-class SessionYearModel(models.Model):
-    id = models.AutoField(primary_key=True)
-    session_start_year= models.DateTimeField()
-    session_end_year= models.DateTimeField()
-    objects=models.Manager()
+from django.db.models import Q
 
 class Courses(models.Model):
     id = models.AutoField(primary_key=True)
     course_name = models.CharField(max_length=255)
-    semesters = models.CharField(max_length=10,default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     objects = models.Manager()
@@ -70,7 +64,6 @@ class Students(models.Model):
     profile_pic = models.FileField()
     address = models.TextField()
     course_id = models.ForeignKey(Courses, on_delete=models.DO_NOTHING)
-    session_year_id=models.ForeignKey(SessionYearModel, on_delete=models.CASCADE,default=1)
     semester_id = models.ForeignKey(Semester,on_delete=models.CASCADE,default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
@@ -176,9 +169,9 @@ class Question(models.Model):
     course_id = models.ForeignKey(Courses, on_delete=models.CASCADE,default=1)
     subject_id = models.ForeignKey(Subjects,on_delete=models.CASCADE,default=1)
 
-
 class StudentResult(models.Model):
     id = models.AutoField(primary_key=True)
+    semester = models.ForeignKey(Semester,on_delete=models.CASCADE,default=1)
     student_id = models.ForeignKey(Students, on_delete=models.CASCADE)
     subject_id = models.ForeignKey(Subjects, on_delete=models.CASCADE)
     subject_exam_marks = models.FloatField(default=0)
@@ -216,13 +209,54 @@ class OnlineClassRoom(models.Model):
     room_name = models.CharField(max_length=255)
     room_pwd = models.CharField(max_length=255)
     subject = models.ForeignKey(Subjects, on_delete=models.CASCADE)
+    semester_id = models.ForeignKey(Semester,on_delete=models.CASCADE,default=1)
     started_by = models.ForeignKey(Staffs, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
     created_on = models.DateTimeField(auto_now_add=True)
     objects = models.Manager()
 
 
+class ThreadManager(models.Manager):
+    def by_user(self, **kwargs):
+        user = kwargs.get('user')
+        lookup = Q(first_person=user) | Q(second_person=user)
+        qs = self.get_queryset().filter(lookup).distinct()
+        return qs
 
+
+class Thread(models.Model):
+    first_person = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name='thread_first_person')
+    second_person = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True,related_name='thread_second_person')
+    updated = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    objects = ThreadManager()
+    class Meta:
+        unique_together = ['first_person', 'second_person']
+
+
+class ChatMessage(models.Model):
+    thread = models.ForeignKey(Thread, null=True, blank=True, on_delete=models.CASCADE, related_name='chatmessage_thread')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+
+
+class AttendanceSampl(models.Model):
+    id = models.AutoField(primary_key=True)
+    student_id = models.ForeignKey(Students, on_delete=models.DO_NOTHING)
+    subject_id = models.ForeignKey(Subjects, on_delete=models.DO_NOTHING)
+    attendance_date = models.DateField()
+    semester_id = models.ForeignKey(Semester,on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
+    period1 = models.CharField(max_length=50)
+    period2 = models.CharField(max_length=50)
+    period3 = models.CharField(max_length=50)
+    period4 = models.CharField(max_length=50)
+    period5 = models.CharField(max_length=50)
 
 
 @receiver(post_save, sender=CustomUser)

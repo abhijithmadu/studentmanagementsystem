@@ -1,4 +1,3 @@
-
 {% extends 'hod_template/base_template.html' %}
 {% block page_title %}
 Add Subject
@@ -16,12 +15,13 @@ Add Subject
               </div>
               <!-- /.card-header -->
               <!-- form start -->
-              <form role="form" action="/add_subject_save" method="post">
+              <form role="form" action="/add_subject_save" method="post" id="validate_form">
                   {% csrf_token %}
                 <div class="card-body">
                   <div class="form-group">
                     <label>Subject Name </label>
-                    <input type="text" class="form-control" name="subject_name" placeholder="Enter Subject">
+                    <input type="text" class="form-control" name="subject_name" placeholder="Enter Subject" id="id_subject" autocomplete="off">
+                    <span class='error-message' id='subject-error' style="font-size:small"></span>
                   </div>
                   <div class="form-group">
                     <label>Semester</label>
@@ -56,7 +56,7 @@ Add Subject
                 <!-- /.card-body -->
 
                 <div class="card-footer">
-                  <button type="submit" class="btn btn-primary btn-block">Add Subject</button>
+                  <button type="submit"  class="btn btn-primary btn-block" >Add Subject</button>
                 </div>
               </form>
             </div>
@@ -70,4 +70,79 @@ Add Subject
     </section>
     <!-- /.content -->
 {% endblock main_content %}
+
+{% block custom_js %}
+<script>
+  $(document).ready(function(){
+    $("#id_subject").keyup(function(){
+      console.log($(this).val());
+      var subject = $(this).val();
+      if(subject!=""){
+      $.ajax({
+        url:"{% url 'check_subject_exist' %}",
+        type:'POST',
+        data:{subject:subject}
+
+      })
+      .done(function(response){
+        console.log(response)
+        if(response=="True"){
+          $(".subject_error").remove();
+          $("<span class='subject_error' style='padding:5px;color:red;font-weight:bold;'>Subject Not Available</span>").insertAfter("#id_subject")
+
+        }
+        else{
+          $(".subject_error").remove();
+          $("<span class='subject_error' style='padding:5px;color:green;font-weight:bold;'>Subject Available</span>").insertAfter("#id_subject")
+        }
+
+     
+      })
+      .fail(function(){
+
+      })
+    }
+    else{
+      $(".subject_error").remove();
+    }
+    });    
+  })
+</script>
+<script>
+  function validateSubject() {
+
+var subject = document.getElementById('id_subject').value;
+
+if(subject.length == 0) {
+
+  producePrompt('Subject name is required', 'subject-error' , 'red')
+  return false;
+
+}
+
+if (!subject.match(/^[A-Za-z]+$/)) {
+
+  producePrompt('Only Alphabets allowed','subject-error', 'red');
+  return false;
+
+}
+
+
+producePrompt('', 'subject-error', 'green');
+return true;
+
+}
+function producePrompt(message, promptLocation, color) {
+
+document.getElementById(promptLocation).innerHTML = message;
+document.getElementById(promptLocation).style.color = color;
+
+
+}
+
+
+</script>
+
+{% endblock custom_js %}
+
 

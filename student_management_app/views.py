@@ -6,6 +6,9 @@ from django.http.response import HttpResponse, HttpResponseRedirect, JsonRespons
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate
 from django.contrib import messages
+from django.urls import reverse
+from .models import Thread
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -16,18 +19,23 @@ def superadminlogin(request):
     return render(request,"superadmintemplate/superadminlogintemplate.html")
 
 def superlogin(request):
+    print("helllosupwer")
     if request.method !='POST':
         HttpResponse("Method Not allowed")
     else:
         username = "super@gmail.com"
-        pwd = "super" 
+        pword = "12345" 
         email = request.POST.get("email")
+        print(email)
         password = request.POST.get("password")
-        if username == email and pwd == password:
+        print(password)
+        if username == email and pword == password:
+            print("just a sample")
             return HttpResponseRedirect("/superadmin_home")
         else:
             messages.error(request,"Invalid Login Details")
             return HttpResponseRedirect("/superadminlogin")
+
 
 def logout_super(request):
     logout(request)
@@ -47,9 +55,9 @@ def doLogin(request):
             if user.user_type == "1":
                 return HttpResponseRedirect("/admin_home")
             elif user.user_type == "2":
-                return HttpResponseRedirect("/staff_home")
+                return HttpResponseRedirect(reverse("staff_home"))
             else:
-                return HttpResponseRedirect("/student_home")
+                return HttpResponseRedirect(reverse("student_home"))
         else:
             messages.error(request,"Invalid Login Details")
             return HttpResponseRedirect("/")
@@ -67,16 +75,16 @@ def logout_user(request):
     return HttpResponseRedirect("/")
 
 def showFirebaseJS(request):
-    data='importScripts("https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js");' \
-         'importScripts("https://www.gstatic.com/firebasejs/8.8.1/firebase-messaging.js");' \
+    data='importScripts("https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js");' \
+         'importScripts("https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js");' \
          'var firebaseConfig = {' \
-         '        apiKey: "AIzaSyBnrjKzEc33BZE_sKA8KrEv336i7sI5k7o",' \
-         '        authDomain: "studentmanagementsystem-2fdee.firebaseapp.com",' \
-         '        projectId: "studentmanagementsystem-2fdee",' \
-         '        storageBucket: "studentmanagementsystem-2fdee.appspot.com",' \
-         '        messagingSenderId: "357107424809",' \
-         '        appId: "1:357107424809:web:b80271c2deb98080598638",' \
-         '        measurementId: "G-PZR89HF1TQ"' \
+         '        apiKey: "AIzaSyCJ8KrGXMqXpcIqB0B1LSR4_XxPBIqh8Sw",' \
+         '        authDomain: "studentmanagementsystem-6a09b.firebaseapp.com",' \
+         '        projectId: "studentmanagementsystem-6a09b",' \
+         '        storageBucket: "studentmanagementsystem-6a09b.appspot.com",' \
+         '        messagingSenderId: "733206703450",' \
+         '        appId: "1:733206703450:web:e0cfb5ba5ba4b6a7fe9763",' \
+         '        measurementId: "G-JJ41EM0XK5"' \
          ' };' \
          'firebase.initializeApp(firebaseConfig);' \
          'const messaging=firebase.messaging();' \
@@ -91,6 +99,15 @@ def showFirebaseJS(request):
          '});'
 
     return HttpResponse(data,content_type="text/javascript")
+
+
+def messages_page(request):
+    print("hello url")
+    threads = Thread.objects.by_user(user=request.user).prefetch_related('chatmessage_thread').order_by('timestamp')
+    context = {
+        'Threads': threads
+    }
+    return render(request, 'chat_template/messages.html', context)
 
 
 

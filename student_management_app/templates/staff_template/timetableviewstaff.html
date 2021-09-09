@@ -1,0 +1,93 @@
+
+{% extends 'staff_template/base_template.html' %}
+{% block page_title %}
+TimeTable
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+
+
+           <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">TimeTable</h3>
+
+                <div class="card-tools">
+                  <div class="input-group input-group-sm" style="width: 150px;">
+                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap">
+                  <thead>
+                    <tr>
+                      <th>Day</th>
+                      <th>Period 1</th>
+                      <th>Period 2</th>
+                      <th>Period 3</th>
+                      <th>Period 4</th>
+                      <th>Period 5</th>
+                      <!-- <th>Period 6</th> -->
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    <tr>
+                      <td>Monday</td>
+                      {% for mon in Monday %}
+                      <td>{{ mon }}</td>
+                      {% endfor %}
+                    </tr>
+                    <tr>
+                      <td>Tuesday</td>
+                      {% for tue in Tuesday %}
+                      <td>{{ tue }}</td>
+                      {% endfor %}
+                    </tr>
+                    <tr>
+                      <td>Wednesday</td>
+                      {% for wed in Wednesday %}
+                      <td>{{ wed }}</td>
+                      {% endfor %}
+                    </tr>
+                    <tr>
+                      <td>Thursday</td>
+                      {% for thurs in Thursday %}
+                      <td>{{ thurs }}</td>
+                      {% endfor %}
+                    </tr>
+                    <tr>
+                      <td>Friday</td>
+                      {% for fri in Friday %}
+                      <td>{{ fri }}</td>
+                      {% endfor %}
+                    </tr>
+                    <tr>
+                      <td>Saturday</td>
+                      {% for sat in Saturday %}
+                      <td>{{ sat }}</td>
+                      {% endfor %}
+                    </tr>
+
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- /.content -->
+{% endblock main_content %}

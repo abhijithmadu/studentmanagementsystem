@@ -37,15 +37,15 @@ let send_message_form = $('#send-message-form')
 const USER_ID = $('#logged-in-user').val()
 let propic="{{login_pro.logo.url}}"
 
-let loc = window.location
-let wsStart = 'ws://'
+// let loc = window.location
+// let wsStart = 'ws://'
 
-if(loc.protocol === 'https') {
-    wsStart = 'wss://'
-}
-let endpoint = wsStart + loc.host +":8001"+ loc.pathname
+// if(loc.protocol === 'https') {
+//     wsStart = 'wss://'
+// }
+// let endpoint = wsStart + loc.host +":8001"+ loc.pathname
 
-var socket = new WebSocket(endpoint)
+var socket = new WebSocket('wss://realabhijith.tech:8001/chat/')
 
 socket.onopen = async function(e){
     console.log('open', e)

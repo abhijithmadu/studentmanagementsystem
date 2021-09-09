@@ -48,7 +48,7 @@ let propic="{{login_pro.logo.url}}"
 // }
 // let endpoint = 'ws://' + loc.host +":8001"+ loc.pathname
 
-var socket = new WebSocket('ws://smsportal.realabhijith.tech:8001/chat/')
+var socket = new WebSocket('ws://realabhijith.tech:8001/chat/')
 // var socket = new WebSocket(endpoint)
 
 socket.onopen = async function(e){

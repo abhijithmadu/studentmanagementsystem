@@ -45,9 +45,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'student_management_app',
     'froala_editor',
-     'channels',
 ]
 
 MIDDLEWARE = [

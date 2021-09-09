@@ -9,18 +9,21 @@ https://docs.djangoproject.com/en/3.2/howto/deployment/asgi/
 
 import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'student_management_system.settings')
+
 from django.core.asgi import get_asgi_application
-import student_management_app.routing
-from channels.routing import ProtocolTypeRouter, URLRouter
+django_asgi_application = get_asgi_application()
 from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter
+import django
+from student_management_app import routing
 
 
-
+django.setup()
 application = ProtocolTypeRouter({
-    'http': get_asgi_application(),
+    'http': django_asgi_application,
     'websocket': AuthMiddlewareStack(
         URLRouter(
-            student_management_app.routing.websocket_urlpatterns
+            routing.websocket_urlpatterns
         )
     )
 })

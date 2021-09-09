@@ -38,15 +38,15 @@ const USER_ID = $('#logged-in-user').val()
 let propic="{{login_pro.logo.url}}"
 
 let loc = window.location
-let wsStart 
+// let wsStart 
 
-if(loc.protocol === 'https') {
-    wsStart = 'wss://'
-}
-else{
-    wsStart = 'ws://'
-}
-let endpoint = wsStart + loc.host +":8001"+ loc.pathname
+// if(loc.protocol === 'https') {
+//     wsStart = 'wss://'
+// }
+// else{
+//     wsStart = 'ws://'
+// }
+let endpoint = 'wss://' + loc.host +":8001"+ loc.pathname
 
 // var socket = new WebSocket('ws://realabhijith.tech:8001/chat/')
 var socket = new WebSocket(endpoint)

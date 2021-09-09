@@ -80,8 +80,8 @@ TEMPLATES = [
     },
 ]
 
-# WSGI_APPLICATION = 'student_management_system.wsgi.application'
-ASGI_APPLICATION = 'student_management_system.asgi.application'
+WSGI_APPLICATION = 'student_management_system.wsgi.application'
+# ASGI_APPLICATION = 'student_management_system.asgi.application'
 
 
 # Database
@@ -93,16 +93,27 @@ ASGI_APPLICATION = 'student_management_system.asgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'student_management_system',
+#         'USER': 'student_management_system',
+#         'PASSWORD': 'student_management_password',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'student_management_system',
         'USER': 'student_management_system',
         'PASSWORD': 'student_management_password',
         'HOST': 'localhost',
-        'PORT': '3306',
+        'PORT': '5432',
     }
 }
+
 
 
 # Password validation

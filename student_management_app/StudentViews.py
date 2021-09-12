@@ -177,31 +177,56 @@ def student_view_attendence_save(request):
     #     print(end_data)
     #     return HttpResponse("OK")
 
+# def attendence_view(request):
+#     return render(request,"student_template/student_attendance_view.html")
+
+# def student_view_attendance_post(request):
+#     date = request.POST.get("date")
+#     print(date)
+#     date_lst = []
+#     date_lst = date.split("-")
+#     print(date_lst)
+
+#     # data =datetime.datetime.strptime(date,"%Y-%m-%d").date()
+#     # print(data)
+#     student =Students.objects.get(admin=request.user.id)
+#     semester = Semester.objects.get(id = student.semester_id.id)
+#     # subject = Subjects.objects.filter(semester_id=semester.id)
+#     print(semester)
+#     attendence = Attendance.objects.filter(attendance_date__month=date_lst[1],semester_id=semester)
+#     print(attendence)
+#     attendence_report = AttendanceReport.objects.filter(attendance_id__in=attendence,student_id=student)
+#     print(attendence_report)
+#     attendence_sample = AttendanceSampl.objects.filter(attendance_date__month=date_lst[1],student_id=student)
+#     print("sampleeeeeeeeeeeeeee",attendence_sample)
+#     context = {
+#         "attendence_report":attendence_report,
+#         "attendence_sample":attendence_sample,
+#     }
+#     return render(request,"student_template/student_attendance_post.html",context)
+
 def attendence_view(request):
     return render(request,"student_template/student_attendance_view.html")
 
 def student_view_attendance_post(request):
     date = request.POST.get("date")
     print(date)
-    date_lst = []
-    date_lst = date.split("-")
-    print(date_lst)
+    # date_lst = []
+    # date_lst = date.split("-")
+    # print(date_lst)
 
-    # data =datetime.datetime.strptime(date,"%Y-%m-%d").date()
-    # print(data)
+    data =datetime.datetime.strptime(date,"%Y-%m-%d").date()
+    print(data)
     student =Students.objects.get(admin=request.user.id)
     semester = Semester.objects.get(id = student.semester_id.id)
     # subject = Subjects.objects.filter(semester_id=semester.id)
     print(semester)
-    attendence = Attendance.objects.filter(attendance_date__month=date_lst[1],semester_id=semester)
+    attendence = Attendance.objects.filter(attendance_date=data,semester_id=semester)
     print(attendence)
     attendence_report = AttendanceReport.objects.filter(attendance_id__in=attendence,student_id=student)
     print(attendence_report)
-    attendence_sample = AttendanceSampl.objects.filter(attendance_date__month=date_lst[1],student_id=student)
-    print("sampleeeeeeeeeeeeeee",attendence_sample)
     context = {
         "attendence_report":attendence_report,
-        "attendence_sample":attendence_sample,
     }
     return render(request,"student_template/student_attendance_post.html",context)
 

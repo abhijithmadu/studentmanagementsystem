@@ -66,11 +66,9 @@ def staff_home(request):
     }
     return render(request,"staff_template/staff_home_template.html",context)
 
-
 def staff_take_attendance(request):
     admin = Staffs.objects.get(admin = request.user.id)
     semester = Semester.objects.filter(course = admin.course_id.id)
-
     context={
        "semester":semester 
        
@@ -93,118 +91,169 @@ def get_students(request):
 def save_attendance_data(request):
     student_ids=request.POST.get("student_ids")
     subject_id=request.POST.get("subject_id")
-    period=request.POST.get("period")
-    print("----==========",period)
     attendance_date=str(request.POST.get("attendance_date"))
     print(attendance_date)
     semester=request.POST.get("semester")
 
     subject_model=Subjects.objects.get(id=subject_id)
     semester_model = Semester.objects.get(id=semester)
-    print("sssss",student_ids)
     json_sstudent=json.loads(student_ids)
-    print("ssssssssssss",json_sstudent)
     print(json_sstudent,"hellomhsbdhbchjds")
 
-    # try:
-    print("inside try")
-    attendance=Attendance(subject_id=subject_model,attendance_date=attendance_date,semester_id=semester_model)
-    attendance.save()
-    print(attendance.attendance_date)
-    period1 = '1'
-    if AttendanceSampl.objects.filter(attendance_date = attendance_date).exists():
+    try:
+        print("inside try")
+        attendance=Attendance(subject_id=subject_model,attendance_date=attendance_date,semester_id=semester_model)
+        attendance.save()
+        print(attendance.attendance_date)
+
         for stud in json_sstudent:
             print(stud,"hai helllop")
             student=Students.objects.get(admin=stud['id'])
-            date_lst = []
-            date_lst = attendance_date.split("-")
-            attendance_repor=AttendanceSampl.objects.get(student_id=student)
-            attendance_repor.save()
-            if stud['status'] == 0:
-                if period == 'period1':
-                    attendance_repor.period1 = '0'
-                    attendance_repor.save()
-                elif period == 'period2':
-                    attendance_repor.period2 = '0'
-                    attendance_repor.save()
-                elif period == 'period3':
-                    attendance_repor.period3 = '0'
-                    attendance_repor.save()
-                elif period == 'period4':
-                    attendance_repor.period4 = '0'
-                    attendance_repor.save()
-                elif period == 'period5':
-                    attendance_repor.period5 = '0'
-                    attendance_repor.save()
-            elif stud['status'] == 1:
-                if period == 'period1':
-                    attendance_repor.period1 = '1'
-                    attendance_repor.save()
-                elif period == 'period2':
-                    attendance_repor.period2 = '1'
-                    attendance_repor.save()
-                elif period == 'period3':
-                    attendance_repor.period3 = '1'
-                    attendance_repor.save()
-                elif period == 'period4':
-                    attendance_repor.period4 = '1'
-                    attendance_repor.save()
-                elif period == 'period5':
-                    attendance_repor.period5 = '1'
-                    attendance_repor.save()
-    else:
-        for stud in json_sstudent:
-            print(stud,"hai helllop")
-            student=Students.objects.get(admin=stud['id'])
-            date_lst = []
-            date_lst = attendance_date.split("-")
+            attendance_report=AttendanceReport(student_id=student,attendance_id=attendance,status=stud['status'],semester_id=semester_model)
+            attendance_report.save()
+        return HttpResponse("OK")
+    except:
+        print("inside exc")
+        return HttpResponse("ERR")
 
-            attendance_repor=AttendanceSampl(student_id=student, subject_id=subject_model,attendance_date=attendance_date,semester_id=semester_model,period1='2',period2='2',period3='2',period4='2',period5='2')
-            attendance_repor.save()
-            if stud['status'] == 0:
-                if period == 'period1':
-                    attendance_repor.period1 = '0'
-                    attendance_repor.save()
-                elif period == 'period2':
-                    attendance_repor.period2 = '0'
-                    attendance_repor.save()
-                elif period == 'period3':
-                    attendance_repor.period3 = '0'
-                    attendance_repor.save()
-                elif period == 'period4':
-                    attendance_repor.period4 = '0'
-                    attendance_repor.save()
-                elif period == 'period5':
-                    attendance_repor.period5 = '0'
-                    attendance_repor.save()
-            elif stud['status'] == 1:
-                if period == 'period1':
-                    attendance_repor.period1 = '1'
-                    attendance_repor.save()
-                elif period == 'period2':
-                    attendance_repor.period2 = '1'
-                    attendance_repor.save()
-                elif period == 'period3':
-                    attendance_repor.period3 = '1'
-                    attendance_repor.save()
-                elif period == 'period4':
-                    attendance_repor.period4 = '1'
-                    attendance_repor.save()
-                elif period == 'period5':
-                    attendance_repor.period5 = '1'
-                    attendance_repor.save()
+# def staff_take_attendance(request):
+#     admin = Staffs.objects.get(admin = request.user.id)
+#     semester = Semester.objects.filter(course = admin.course_id.id)
+
+#     context={
+#        "semester":semester 
+       
+#         }
+#     return render(request,"staff_template/staff_take_attendance.html",context)
+
+# @csrf_exempt
+# def get_students(request):
+#     semester_id=request.POST.get("semester")
+#     semseter = Semester.objects.get(id=semester_id)
+#     students=Students.objects.filter(semester_id=semseter)
+#     list_data=[]
+
+#     for student in students:
+#         data_small={"id":student.admin.id,"name":student.admin.first_name+" "+student.admin.last_name}
+#         list_data.append(data_small)
+#     return JsonResponse(json.dumps(list_data),content_type="application/json",safe=False)
+
+# @csrf_exempt
+# def save_attendance_data(request):
+#     student_ids=request.POST.get("student_ids")
+#     subject_id=request.POST.get("subject_id")
+#     period=request.POST.get("period")
+#     print("----==========",period)
+#     attendance_date=str(request.POST.get("attendance_date"))
+#     print(attendance_date)
+#     semester=request.POST.get("semester")
+
+#     subject_model=Subjects.objects.get(id=subject_id)
+#     semester_model = Semester.objects.get(id=semester)
+#     print("sssss",student_ids)
+#     json_sstudent=json.loads(student_ids)
+#     print("ssssssssssss",json_sstudent)
+#     print(json_sstudent,"hellomhsbdhbchjds")
+
+#     # try:
+#     print("inside try")
+#     attendance=Attendance(subject_id=subject_model,attendance_date=attendance_date,semester_id=semester_model)
+#     attendance.save()
+#     print(attendance.attendance_date)
+#     period1 = '1'
+#     if AttendanceSampl.objects.filter(attendance_date = attendance_date).exists():
+#         for stud in json_sstudent:
+#             print(stud,"hai helllop")
+#             student=Students.objects.get(admin=stud['id'])
+#             date_lst = []
+#             date_lst = attendance_date.split("-")
+#             attendance_repor=AttendanceSampl.objects.get(student_id=student)
+#             attendance_repor.save()
+#             if stud['status'] == 0:
+#                 if period == 'period1':
+#                     attendance_repor.period1 = '0'
+#                     attendance_repor.save()
+#                 elif period == 'period2':
+#                     attendance_repor.period2 = '0'
+#                     attendance_repor.save()
+#                 elif period == 'period3':
+#                     attendance_repor.period3 = '0'
+#                     attendance_repor.save()
+#                 elif period == 'period4':
+#                     attendance_repor.period4 = '0'
+#                     attendance_repor.save()
+#                 elif period == 'period5':
+#                     attendance_repor.period5 = '0'
+#                     attendance_repor.save()
+#             elif stud['status'] == 1:
+#                 if period == 'period1':
+#                     attendance_repor.period1 = '1'
+#                     attendance_repor.save()
+#                 elif period == 'period2':
+#                     attendance_repor.period2 = '1'
+#                     attendance_repor.save()
+#                 elif period == 'period3':
+#                     attendance_repor.period3 = '1'
+#                     attendance_repor.save()
+#                 elif period == 'period4':
+#                     attendance_repor.period4 = '1'
+#                     attendance_repor.save()
+#                 elif period == 'period5':
+#                     attendance_repor.period5 = '1'
+#                     attendance_repor.save()
+#     else:
+#         for stud in json_sstudent:
+#             print(stud,"hai helllop")
+#             student=Students.objects.get(admin=stud['id'])
+#             date_lst = []
+#             date_lst = attendance_date.split("-")
+
+#             attendance_repor=AttendanceSampl(student_id=student, subject_id=subject_model,attendance_date=attendance_date,semester_id=semester_model,period1='2',period2='2',period3='2',period4='2',period5='2')
+#             attendance_repor.save()
+#             if stud['status'] == 0:
+#                 if period == 'period1':
+#                     attendance_repor.period1 = '0'
+#                     attendance_repor.save()
+#                 elif period == 'period2':
+#                     attendance_repor.period2 = '0'
+#                     attendance_repor.save()
+#                 elif period == 'period3':
+#                     attendance_repor.period3 = '0'
+#                     attendance_repor.save()
+#                 elif period == 'period4':
+#                     attendance_repor.period4 = '0'
+#                     attendance_repor.save()
+#                 elif period == 'period5':
+#                     attendance_repor.period5 = '0'
+#                     attendance_repor.save()
+#             elif stud['status'] == 1:
+#                 if period == 'period1':
+#                     attendance_repor.period1 = '1'
+#                     attendance_repor.save()
+#                 elif period == 'period2':
+#                     attendance_repor.period2 = '1'
+#                     attendance_repor.save()
+#                 elif period == 'period3':
+#                     attendance_repor.period3 = '1'
+#                     attendance_repor.save()
+#                 elif period == 'period4':
+#                     attendance_repor.period4 = '1'
+#                     attendance_repor.save()
+#                 elif period == 'period5':
+#                     attendance_repor.period5 = '1'
+#                     attendance_repor.save()
         
 
-        # attendance_report=AttendanceReport(student_id=student.id,attendance_id=attendance,status=stud['status'],semester_id=semester_model)
-        # attendance_report.save()
-    # for stud in json_sstudent:
-    #     print(stud,"hai helllop")
-    #     student=Students.objects.get(admin=stud['id'])
+#         # attendance_report=AttendanceReport(student_id=student.id,attendance_id=attendance,status=stud['status'],semester_id=semester_model)
+#         # attendance_report.save()
+#     # for stud in json_sstudent:
+#     #     print(stud,"hai helllop")
+#     #     student=Students.objects.get(admin=stud['id'])
         
-    return HttpResponse("OK")
-    # except:
-    #     print("inside exc")
-    #     return HttpResponse("ERR")
+#     return HttpResponse("OK")
+#     # except:
+#     #     print("inside exc")
+#     #     return HttpResponse("ERR")
 
 
 def staff_update_attendance(request):

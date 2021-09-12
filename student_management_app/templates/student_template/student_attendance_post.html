@@ -1,6 +1,6 @@
 {% extends 'student_template/base_template.html' %}
 {% block page_title %}
-Attendence Details
+Ateendence Details
 {% endblock page_title %}
 {% block main_content %}
     <!-- Main content -->
@@ -19,79 +19,23 @@ Attendence Details
                     <table class="table">
                         <tr>
                         <th>Date</th>
-                        <th>Period 1</th>
-                        <th>Period 2</th>
-                        <th>Period 3</th>
-                        <th>Period 4</th>
-                        <th>Period 5</th>
-                        
-
-                        
-                        <!-- <th>Subject</th>
-                            <th>Status</th> -->
+                        <th>Subject</th>
+                        <th>Status</th>
                         </tr>
                         
-                        {% for attendence_report in attendence_sample %}
-                        <tr>
-                         
-                            <td>{{ attendence_report.attendance_date }}</td>
-                            {% if attendence_report.period1 == '0' %}
-                            <td style="color: red;font-size: 20px;"> Absent </td>
-                            {% elif attendence_report.period1 == '1' %}
-                            <td style="color:green;font-size: 20px;"> Present </td>
-                            {% else %}
-                            <td style="color:rgba(231, 198, 6, 0.911);font-size: 20px;"> Not Taken </td>
-                            {% endif %}
-     
-                            {% if attendence_report.period2 == '0' %}
-                            <td style="color: red;font-size: 20px;"> Absent </td>
-                            {% elif attendence_report.period2 == '1' %}
-                            <td style="color:green;font-size: 20px;"> Present </td>
-                            {% else %}
-                            <td style="color:rgba(231, 198, 6, 0.911);font-size: 20px;"> Not Taken </td>
-                            {% endif %}
-                           
-                            {% if attendence_report.period3 == '0' %}
-                            <td style="color: red;font-size: 20px;"> Absent </td>
-                            {% elif attendence_report.period3 == '1' %}
-                            <td style="color:green;font-size: 20px;"> Present </td>
-                            {% else %}
-                            <td style="color:rgba(231, 198, 6, 0.911);font-size: 20px;"> Not Taken </td>
-                            {% endif %}
-                           
-                            {% if attendence_report.period4 == '0' %}
-                            <td style="color: red;font-size: 20px;"> Absent </td>
-                            {% elif attendence_report.period4 == '1' %}
-                            <td style="color:green;font-size: 20px;"> Present </td>
-                            {% else %}
-                            <td style="color:rgba(231, 198, 6, 0.911);font-size: 20px;"> Not Taken </td>
-                            {% endif %}
-                           
-                            {% if attendence_report.period5 == '0' %}
-                            <td style="color: red;font-size: 20px;"> Absent </td>
-                            {% elif attendence_report.period5 == '1' %}
-                            <td style="color:green;font-size: 20px;"> Present </td>
-                            {% else %}
-                            <td style="color:rgba(231, 198, 6, 0.911);font-size: 20px;"> Not Taken </td>
-                            {% endif %}
-                           
-                          
-                            
-                        </tr>
-                        {% endfor %}
-                       
-                        
-                        <!-- {% for attendence_report in attendence_report %}
+                        {% for attendence_report in attendence_report %}
                         <tr>
                            
+                            <td>{{ attendence_report.attendance_id.attendance_date }}</td>
                             
+                            <td>{{attendence_report.attendance_id.subject_id.subject_name}}</td>
                             {% if attendence_report.status == True %}
                             <td style="color:green;font-size: 20px;">Present</td>
                             {% else %}
                             <td style="color: red;font-size: 20px;">Absent</td>
                             {% endif %}
                         </tr>  
-                        {% endfor %} -->
+                        {% endfor %}
                             
                     </table>
 

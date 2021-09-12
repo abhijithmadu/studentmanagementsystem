@@ -93,26 +93,26 @@ ASGI_APPLICATION = 'student_management_system.asgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'student_management_system',
-#         'USER': 'student_management_system',
-#         'PASSWORD': 'student_management_password',
-#         'HOST': 'localhost',
-#         'PORT': '3306',
-#     }
-# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'student_management_system',
         'USER': 'student_management_system',
         'PASSWORD': 'student_management_password',
         'HOST': 'localhost',
-        'PORT': '5432',
+        'PORT': '3306',
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'student_management_system',
+#         'USER': 'student_management_system',
+#         'PASSWORD': 'student_management_password',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
 
 

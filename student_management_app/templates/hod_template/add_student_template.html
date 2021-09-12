@@ -16,7 +16,7 @@ Add Student
               </div>
               <!-- /.card-header -->
               <!-- form start -->
-              <form role="form" action="/add_students_save" method="post" enctype="multipart/form-data">
+              <form role="form" action="/add_students_save" method="post" enctype="multipart/form-data" id="pro-form">
                   {% csrf_token %}
                 <div class="card-body">
                   <div class="form-group">
@@ -25,15 +25,15 @@ Add Student
                   </div>
                   <div class="form-group">
                     <label>Password</label>
-                    <input type="password" class="form-control" placeholder="Password" name="password">
+                    <input type="password" class="form-control" placeholder="Password" name="password" id="pwd">
                   </div>
                    <div class="form-group">
                     <label>First Name</label>
-                    <input type="text" class="form-control" placeholder="First Name" name="first_name">
+                    <input type="text" class="form-control" placeholder="First Name" name="first_name" id="fname">
                   </div>
                    <div class="form-group">
                     <label>Last Name</label>
-                    <input type="text" class="form-control" placeholder="Last Name" name="last_name">
+                    <input type="text" class="form-control" placeholder="Last Name" name="last_name" id="lname">
                   </div>
                    <div class="form-group">
                     <label>Username</label>
@@ -41,7 +41,7 @@ Add Student
                   </div>
                   <div class="form-group">
                     <label>Address</label>
-                    <input type="text" class="form-control" placeholder="Address" name="address">
+                    <input type="text" class="form-control" placeholder="Address" name="address" id=adrs>
                   </div>
                   <!-- <div class="form-group">
                     <label>Course</label>
@@ -56,7 +56,7 @@ Add Student
                 </div> -->
                   <div class="form-group">
                     <label>Sex</label>
-                    <select  class="form-control" name="sex">
+                    <select  class="form-control" name="sex" id="gender">
                         <option>Male</option>    
                         <option>Female</option>    
                     </select>
@@ -64,7 +64,7 @@ Add Student
 
                   <div class="form-group">
                     <label>Semester</label>
-                    <select  class="form-control" name="semester_id">
+                    <select  class="form-control" name="semester_id" id="sem">
                         
                         {% for semester in semester %}
                         <option value="{{semester.id}} ">{{semester.semester_name}}</option>
@@ -91,6 +91,7 @@ Add Student
                         {% endfor %}
                       {% endif %}
                     </div>
+                    <div id="error" style="color: red;"></div>
 
                 </div>
                 <!-- /.card-body -->
@@ -98,6 +99,7 @@ Add Student
                 <div class="card-footer">
                   <button type="submit" class="btn btn-primary btn-block">Add Student</button>
                 </div>
+                
               </form>
             </div>
             <!-- /.card -->
@@ -184,6 +186,28 @@ Add Student
 
     });
 
+  })
+</script>
+<script>
+  const email=document.getElementById("id_email")
+  const name=document.getElementById("pwd")
+  const fname=document.getElementById("fname")
+  const lname=document.getElementById("lname")
+  const uname=document.getElementById("uname")
+  const address=document.getElementById("adrs")
+  const gender=document.getElementById("gender")
+  const semester=document.getElementById("sem")
+  const form=document.getElementById("pro-form")
+  const error=document.getElementById("error")
+  
+
+  form.addEventListener('submit',(e)=>{
+      if (name.value === '' || email.value === ''  || fname.value === '' || lname.value === ''  || uname.value === ''  || address.value === ''  || gender.value === ''  || semester.value === '' ){
+          
+      e.preventDefault()
+      error.innerHTML="Please fill the form"
+
+      }
   })
 </script>
 

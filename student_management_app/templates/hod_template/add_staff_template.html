@@ -16,7 +16,7 @@ Add Staff
               </div>
               <!-- /.card-header -->
               <!-- form start -->
-              <form role="form" action="/add_staff_save" method="post">
+              <form role="form" action="/add_staff_save" method="post" id="pro-form">
                   {% csrf_token %}
                 <div class="card-body">
                   <div class="form-group">
@@ -25,15 +25,15 @@ Add Staff
                   </div>
                   <div class="form-group">
                     <label>Password</label>
-                    <input type="password" class="form-control" placeholder="Password" name="password">
+                    <input type="password" class="form-control" placeholder="Password" name="password" id="pwd">
                   </div>
                    <div class="form-group">
                     <label>First Name</label>
-                    <input type="text" class="form-control" placeholder="First Name" name="first_name">
+                    <input type="text" class="form-control" placeholder="First Name" name="first_name" id="fname">
                   </div>
                    <div class="form-group">
                     <label>Last Name</label>
-                    <input type="text" class="form-control" placeholder="Last Name" name="last_name">
+                    <input type="text" class="form-control" placeholder="Last Name" name="last_name" id="lname">
                   </div>
                    <div class="form-group">
                     <label>Username</label>
@@ -41,7 +41,7 @@ Add Staff
                   </div>
                   <div class="form-group">
                     <label>Address</label>
-                    <input type="text" class="form-control" placeholder="Address" name="address">
+                    <input type="text" class="form-control" placeholder="Address" name="address" id=adrs>
                   </div>
                   
                       <div class="form-group">
@@ -56,6 +56,7 @@ Add Staff
                         {% endfor %}
                       {% endif %}
                     </div>
+                    <div id="error" style="color: red;"></div>
 
                 </div>
                 <!-- /.card-body -->
@@ -148,6 +149,28 @@ Add Staff
 
     });
 
+  })
+</script>
+<script>
+  const email=document.getElementById("id_email")
+  const name=document.getElementById("pwd")
+  const fname=document.getElementById("fname")
+  const lname=document.getElementById("lname")
+  const uname=document.getElementById("id_username")
+  const address=document.getElementById("adrs")
+  const gender=document.getElementById("gender")
+  const semester=document.getElementById("sem")
+  const form=document.getElementById("pro-form")
+  const error=document.getElementById("error")
+  
+
+  form.addEventListener('submit',(e)=>{
+      if (name.value === '' || email.value === ''  || fname.value === '' || lname.value === ''  || uname.value === ''  || address.value === ''  || gender.value === ''  || semester.value === '' ){
+          
+      e.preventDefault()
+      error.innerHTML="Please fill the form"
+
+      }
   })
 </script>
 
